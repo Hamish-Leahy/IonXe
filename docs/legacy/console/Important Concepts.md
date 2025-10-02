@@ -14,3 +14,5 @@ Before using your Ion Classic console, you should familiarize yourself with the 
 - **Block vs. Assert:** Blocking is for editing, while asserting forces playback of a value.
 - **Live and Blind:** Methods for viewing and editing data. Live is the current output, Blind is stored data.
 - **HTP vs. LTP:** Highest Takes Precedence (HTP) vs. Latest Takes Precedence (LTP) for determining parameter output.
+
+

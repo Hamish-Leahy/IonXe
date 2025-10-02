@@ -47,3 +47,5 @@ Access clear options by selecting {Clear} from the main browser menu. Options in
 ### Locking the Facepanel
 
 Press [Shift] & [Escape] to lock or unlock the face panel, preventing actions from the command line or CIA. This also locks any wings or connected peripherals.
+
+

@@ -30,3 +30,5 @@ The browser is the interface for functions like saving and loading shows, openin
 ### Softkeys
 
 Softkeys are context-sensitive buttons located under the Browser. They change to display options relevant to the current display or command. White labels indicate active softkeys, while gray labels (accessed by pressing [More SK]) show the second page of available softkeys.
+
+

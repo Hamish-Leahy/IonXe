@@ -10,5 +10,6 @@ Then, ensure you have the following information available:
 
 - Console model and serial number (located on the back panel).
 - Dimmer manufacturer and installation type.
-- Other components in your system (Paradigm\u00ae, other control devices,
+- Other components in your system (Paradigm®, other control devices,
+
 

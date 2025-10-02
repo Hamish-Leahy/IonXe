@@ -7,3 +7,5 @@ To use Channel Check:
 3. Use the [Next] or [Last] keys to cycle through the channels.
 
 Any other key press will exit Channel Check mode.
+
+

@@ -13,5 +13,7 @@ This section discusses the various console components:
 - **Parameter and Category Buttons:** Select parameter categories and change encoder pages.
 - **Load Buttons:** Assign content to faders.
 - **Ethernet Ports:** For connecting to networks and other devices.
-- **Littlites\u00ae:** Desk lamps that can be dimmed from the console software.
+- **Littlites®:** Desk lamps that can be dimmed from the console software.
 - **DMX Output:** DMX ports for sending control signals to lighting fixtures.
+
+

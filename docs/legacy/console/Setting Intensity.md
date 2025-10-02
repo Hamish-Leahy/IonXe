@@ -21,3 +21,5 @@ The console also offers special keys for intensity control:
 - [2] [+] [5] [level wheel]: Use the level wheel to adjust intensity of channels 2 and 5.
 
 > **Note:** The [Level], [+%], and [-%] keys have default values that can be changed in the Setup menu.
+
+

@@ -4,3 +4,4 @@ To register your console, you will need to enroll in "My ETC," a personalized ET
 
 Register now at [http://etcconnect.com/product.registration.aspx](http://etcconnect.com/product.registration.aspx).
 
+

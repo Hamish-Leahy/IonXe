@@ -37,3 +37,5 @@ The Ion Classic console offers multiple ways to select channels for manual contr
         - [1] [Thru] [20] {Offset} [3] [Enter]: Selects every third channel (1, 4, 7...19).
 
 > **Note:** The [Thru] command and offset feature work with the current flexichannel state. Channels not included in the flexichannel mode are not selected. Use [Thru] [Thru] to override this behavior.
+
+

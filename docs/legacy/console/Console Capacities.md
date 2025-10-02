@@ -17,3 +17,5 @@ The Ion Classic console has the following capacities:
     - A maximum of 200 configurable cue playbacks, with Go and Stop/Back
     - A maximum of 1000 configurable submasters, with Bump and Assert/channel select
     - One configurable Grandmaster, with Blackout and Blackout Enable
+
+

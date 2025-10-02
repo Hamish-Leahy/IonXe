@@ -19,3 +19,5 @@ The following resources are recommended:
 
 - John Huntington, Show Networks and Control Systems, (Brooklyn, NY:Zircon Designs Press, 2012)
 - The ETC Support Articles: [https://support.etcconnect.com/ETC](https://support.etcconnect.com/ETC)
+
+

@@ -30,3 +30,5 @@ When you have selected/deselected all of the show components you require, press 
 Ion Classic loads the selected show to the console.
 
 > **Caution:** On a partial show open, if any record targets are not opened, any existing data of that type will be cleared from the console. To merge show data, merge should be used.
+
+
