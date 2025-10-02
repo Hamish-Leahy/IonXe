@@ -1,0 +1,14 @@
+# Build outputs
+build/
+out/
+dist/
+
+# Toolchains and envs
+.venv/
+.env
+*.log
+
+# OS cruft
+.DS_Store
+Thumbs.db
+

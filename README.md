@@ -1,53 +1,58 @@
-# IonXE Documentation Repository
+# Open IonXE OS
 
-This repository is a community-driven effort to provide clear, concise, and up-to-date documentation for the IonXE lighting console. We believe that well-organized and accessible documentation empowers users to unlock the full potential of their lighting systems.
+An open-source, from-scratch operating system and firmware stack inspired by the Eos IonXE lighting console, designed for modern hardware with an easier learning curve and extensible architecture.
+
+This project aims to deliver BIOS/bootloader, kernel, drivers, and userland tailored to stage lighting control workflows, with a clean, approachable developer experience. No proprietary code or assets from ETC are used; this work is community-built and legally clean-room by design.
+
+## Vision and Scope
+
+* Build a complete boot-to-desk stack: firmware → bootloader → kernel → device drivers → services → UI.
+* Target x86-64 initially; keep ARM64 in scope. Support common peripherals used in lighting consoles.
+* Prioritize reliability, low-latency I/O, and predictable performance over raw throughput.
+* Provide first-class developer tooling, documentation, and an approachable UX for new users.
+
+## Repository Structure
+
+```
+bootloader/      # Early init, hardware bring-up, handoff to kernel
+firmware/        # Platform firmware or coreboot configs (if applicable)
+hardware/        # Public research notes, schematics (non-proprietary), BOMs
+os/              # Kernel, drivers, HAL, subsystems, userland
+  kernel/
+  drivers/
+  hal/
+  fs/
+  net/
+  audio/
+  graphics/
+  lib/
+  userland/
+  config/
+tools/           # Developer tools and utilities
+scripts/         # Build and developer scripts
+build/           # Build outputs and toolchain configs
+ci/              # Continuous integration configs
+docs/            # Documentation, ADRs, user guides, API refs
+examples/        # Example apps, demos, reference configurations
+specs/           # Public specifications and interface contracts
+third_party/     # Third-party code and licenses
+```
 
 ## Getting Started
 
-1. **Explore the Guides:** Navigate through the guides to learn the essentials of IonXE operation:
-   * **Important Concepts:** Fundamental principles and terminology.
-   * **Power Up the Console / Power Down the Console:** Basic console management.
-   * **Create a New Show File / Open an Existing Show File:** Starting points for your projects.
-   * **Selecting Channels / Setting Intensity:** Controlling your lighting fixtures.
-   * **The Central Information Area (CIA):** Understanding the console's main interface.
-   * **Softkeys:** Mastering efficient command shortcuts.
-
-2. **Reference Manual:** For in-depth details and advanced features, consult the official Eos manual:
-   * `IonClassic_v3.0.0_OperationsManual_RevA...`
-
-## Additional Resources
-
-* **Help from ETC Technical Services:** Contact information for official support.
-* **Online Eos Family User Forums:** Connect with the wider community for tips and troubleshooting.
-* **Other Reference Materials:** Links to additional resources for expanding your knowledge.
+1. See `docs/overview/` for the big picture and glossary.
+2. Read `docs/architecture/` for the boot, kernel, and subsystem designs.
+3. Follow `docs/build/` to set up your toolchains and build the project.
+4. Explore `docs/development/` for contribution flow, code style, and testing.
 
 ## Contributing
 
-We welcome contributions! If you have any corrections, clarifications, or additional information that would benefit the community, please feel free to submit a pull request.
+Please read `CONTRIBUTING.md`, `CODE_OF_CONDUCT.md`, and `SECURITY.md` before contributing. We welcome issues, proposals, and pull requests. Architecture Decision Records (ADRs) live in `docs/adr/`.
 
-## Table of Contents
+## Legal and Ethics
 
-* [Browser.md](Browser.md)
-* [Chan Check.md](Chan Check.md)
-* [Cleaning Your Console.md](Cleaning Your Console.md)
-* [Console Capacities.md](Console Capacities.md)
-* [Console Components.md](Console Components.md)
-* [Create a New Show File.md](Create a New Show File.md)
-* [Help from ETC Technical Services.md](Help from ETC Technical Services.md)
-* [Important Concepts.md](Important Concepts.md)
-* [Ion Layout.md](Ion Layout.md)
-* [Online Eos Family User Forums.md](Online Eos Family User Forums.md)
-* [Open an Existing Show File.md](Open an Existing Show File.md)
-* [Other Reference Materials.md](Other Reference Materials.md)
-* [Power Down the Console.md](Power Down the Console.md)
-* [Power Up the Console.md](Power Up the Console.md)
-* [Register Your Console.md](Register Your Console.md)
-* [Selecting Channels.md](Selecting Channels.md)
-* [Setting Intensity.md](Setting Intensity.md)
-* [Softkeys.md](Softkeys.md)
-* [The Central Information Area (CIA).md](The Central Information Area (CIA).md)
-* [Using this Manual.md](Using this Manual.md)
+This project is community-run and not affiliated with ETC. We do not accept or use proprietary code, confidential materials, or trademarks beyond fair use. Contributors must ensure compliance with licenses and applicable laws.
 
-## Disclaimer
+## Roadmap
 
-This repository is maintained by the IonXE user community and is not officially affiliated with ETC. While we strive for accuracy, always refer to official documentation for the most up-to-date information. 
+High-level milestones are tracked in `ROADMAP.md`, with granular tasks in `TODO.md`.
