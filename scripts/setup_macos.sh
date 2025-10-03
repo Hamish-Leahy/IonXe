@@ -45,8 +45,9 @@ else
   rustup update stable
 fi
 
-log "Adding Rust target x86_64-unknown-none"
+log "Adding Rust targets: x86_64-unknown-none and x86_64-unknown-uefi"
 rustup target add x86_64-unknown-none || true
+rustup target add x86_64-unknown-uefi || true
 
 # Python venv for build tooling
 PYBIN=$(brew --prefix)/opt/python@3.11/bin/python3.11

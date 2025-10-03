@@ -19,9 +19,9 @@ use bootinfo::{BootInfo, FramebufferInfo};
 
 #[entry]
 fn efi_main(image_handle: Handle, mut st: SystemTable<Boot>) -> Status {
-    if let Err(_e) = uefi_services::init(&st) {
-        return Status::ABORTED;
-    }
+    // Install allocator and logger per uefi >=0.26 recommendations
+    if let Err(_e) = uefi::alloc::init(&st) { return Status::ABORTED; }
+    uefi::logger::init().ok();
 
     let _ = st.stdout().reset(false);
     let _ = writeln!(st.stdout(), "IonXE UEFI stage-2 starting...");
