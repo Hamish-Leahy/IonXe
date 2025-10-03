@@ -18,5 +18,14 @@ tower = "0.5"
 anyhow = "1"
 time = { version = "0.3", features = ["macros"] }
 once_cell = "1"
+tower-http = { version = "0.5", features = ["cors", "trace"] }
+
+[lib]
+name = "ionxe_backend"
+path = "src/lib.rs"
+
+[[bin]]
+name = "ionxe-backend"
+path = "src/main.rs"
 
 

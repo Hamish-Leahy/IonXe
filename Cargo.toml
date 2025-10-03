@@ -1,0 +1,8 @@
+[workspace]
+members = [
+    "services/backend",
+    "bootloader/uefi",
+]
+resolver = "2"
+
+

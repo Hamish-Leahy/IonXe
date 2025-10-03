@@ -1,12 +1,27 @@
 # Build outputs
-build/
 out/
 dist/
+target/
+**/target/
+
+# Backend runtime state
+services/backend/build/
+**/build/state/
 
 # Toolchains and envs
 .venv/
 .env
 *.log
+
+# Editor/IDE
+.vscode/
+.idea/
+*.code-workspace
+
+# Coverage
+coverage/
+*.profraw
+*.profdata
 
 # OS cruft
 .DS_Store
