@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+  <key>Label</key><string>com.ionxe.backend</string>
+  <key>ProgramArguments</key>
+  <array>
+    <string>/usr/local/bin/ionxe-backend</string>
+  </array>
+  <key>EnvironmentVariables</key>
+  <dict>
+    <key>IONXE_BACKEND_BIND</key><string>127.0.0.1:8080</string>
+    <key>IONXE_STATE_DIR</key><string>/usr/local/var/ionxe/state</string>
+  </dict>
+  <key>RunAtLoad</key><true/>
+  <key>KeepAlive</key><true/>
+  <key>StandardOutPath</key><string>/usr/local/var/log/ionxe/backend.out.log</string>
+  <key>StandardErrorPath</key><string>/usr/local/var/log/ionxe/backend.err.log</string>
+</dict>
+</plist>
+
+
