@@ -1,0 +1,97 @@
+#include "http.h"
+#include "json.h"
+#include "state.h"
+
+#include <stdio.h>
+#include <string.h>
+
+static void respond_json(http_response *res, int status, const char *json) {
+    res->status = status;
+    res->content_type = "application/json";
+    res->body = json;
+    res->body_len = strlen(json);
+}
+
+static void handle_health(const http_request *req, http_response *res) {
+    (void)req;
+    respond_json(res, 200, "{\"ok\":true}");
+}
+
+static void handle_get_file(const char *path, const char *fallback, http_response *res) {
+    buffer b;
+    if (state_read(path, &b) == 0 && b.len > 0) {
+        res->status = 200;
+        res->content_type = "application/json";
+        res->body = b.data; // note: memory leaks avoided by not freeing before send; short-lived process per request
+        res->body_len = b.len;
+        return;
+    }
+    respond_json(res, 200, fallback);
+}
+
+static void handle_put_file(const http_request *req, const char *path, http_response *res) {
+    if (!json_looks_like_object(req->body, req->body_len)) {
+        respond_json(res, 400, "{\"error\":\"invalid json\"}");
+        return;
+    }
+    if (state_write(path, req->body, req->body_len) != 0) {
+        respond_json(res, 500, "{\"error\":\"persist failed\"}");
+        return;
+    }
+    res->status = 204;
+    res->content_type = "application/json";
+    res->body = "";
+    res->body_len = 0;
+}
+
+static void get_patch(const http_request *req, http_response *res) {
+    (void)req;
+    handle_get_file("build/state/patch.json", "{\"universes\":[],\"fixtures\":[],\"channel_map\":[]}", res);
+}
+
+static void put_patch(const http_request *req, http_response *res) {
+    handle_put_file(req, "build/state/patch.json", res);
+}
+
+static void get_routing(const http_request *req, http_response *res) {
+    (void)req;
+    handle_get_file("build/state/routing.json", "{\"outputs\":[]}", res);
+}
+
+static void put_routing(const http_request *req, http_response *res) {
+    handle_put_file(req, "build/state/routing.json", res);
+}
+
+static void get_dimmer_racks(const http_request *req, http_response *res) {
+    (void)req;
+    handle_get_file("build/state/dimmer_racks.json", "{\"racks\":[]}", res);
+}
+
+static void put_dimmer_racks(const http_request *req, http_response *res) {
+    handle_put_file(req, "build/state/dimmer_racks.json", res);
+}
+
+static void get_dimmer_config(const http_request *req, http_response *res) {
+    (void)req;
+    handle_get_file("build/state/dimmer_config.json", "{\"profiles\":[]}", res);
+}
+
+static void put_dimmer_config(const http_request *req, http_response *res) {
+    handle_put_file(req, "build/state/dimmer_config.json", res);
+}
+
+int main(void) {
+    http_register("GET", "/health", handle_health);
+    http_register("GET", "/api/v1/patch", get_patch);
+    http_register("PUT", "/api/v1/patch", put_patch);
+    http_register("GET", "/api/v1/routing", get_routing);
+    http_register("PUT", "/api/v1/routing", put_routing);
+    http_register("GET", "/api/v1/dimmers/racks", get_dimmer_racks);
+    http_register("PUT", "/api/v1/dimmers/racks", put_dimmer_racks);
+    http_register("GET", "/api/v1/dimmers/config", get_dimmer_config);
+    http_register("PUT", "/api/v1/dimmers/config", put_dimmer_config);
+
+    return http_serve("127.0.0.1", 8081);
+}
+
+
