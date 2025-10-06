@@ -1,6 +1,43 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
+PREFIX=${PREFIX:-/usr/local}
+BIN_DIR="$PREFIX/bin"
+VAR_DIR="$PREFIX/var/ionxe"
+LOG_DIR="$VAR_DIR/log"
+STATE_DIR="$VAR_DIR/state"
+
+echo "[ionxe] Building release binaries..."
+cargo build -p ionxe-backend -p ionxe-middleware --release
+make -C "$(dirname "$0")/../services/backend-c"
+
+echo "[ionxe] Installing binaries to $BIN_DIR"
+install -d "$BIN_DIR" "$LOG_DIR" "$STATE_DIR"
+install -m 0755 "$(dirname "$0")/../services/backend-c/ionxe-backend-c" "$BIN_DIR/ionxe-backend-c"
+install -m 0755 "$(dirname "$0")/../target/release/ionxe-backend" "$BIN_DIR/ionxe-backend"
+install -m 0755 "$(dirname "$0")/../target/release/ionxe-middleware" "$BIN_DIR/ionxe-middleware"
+
+echo "[ionxe] Installing launchd plists"
+PLIST_DIR="$HOME/Library/LaunchAgents"
+install -d "$PLIST_DIR"
+install -m 0644 "$(dirname "$0")/../ci/ionxe.backend.plist" "$PLIST_DIR/com.ionxe.backend.plist"
+install -m 0644 "$(dirname "$0")/../ci/ionxe.backend-c.plist" "$PLIST_DIR/com.ionxe.backend-c.plist"
+install -m 0644 "$(dirname "$0")/../ci/ionxe.middleware.plist" "$PLIST_DIR/com.ionxe.middleware.plist"
+
+echo "[ionxe] Loading launch agents"
+launchctl unload "$PLIST_DIR/com.ionxe.middleware.plist" 2>/dev/null || true
+launchctl unload "$PLIST_DIR/com.ionxe.backend-c.plist" 2>/dev/null || true
+launchctl unload "$PLIST_DIR/com.ionxe.backend.plist" 2>/dev/null || true
+launchctl load "$PLIST_DIR/com.ionxe.backend.plist"
+launchctl load "$PLIST_DIR/com.ionxe.backend-c.plist"
+launchctl load "$PLIST_DIR/com.ionxe.middleware.plist"
+
+echo "[ionxe] Done. Services should be running:"
+echo "  backend    : http://127.0.0.1:8080"
+echo "  backend-c  : http://127.0.0.1:8081"
+echo "  middleware : http://127.0.0.1:8082"
+
+
 # IonXE macOS developer setup script
 # Non-interactive: safe to run multiple times. Requires macOS with Homebrew.
 
