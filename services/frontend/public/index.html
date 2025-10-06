@@ -4,56 +4,153 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title>IonXE Control</title>
-    <style>
-      body { font-family: system-ui, sans-serif; margin: 2rem; }
-      .row { display: flex; gap: .5rem; align-items: center; margin-bottom: .5rem; }
-      input[type="number"] { width: 5rem; }
-      textarea { width: 100%; height: 8rem; }
-      button { padding: .4rem .8rem; }
-    </style>
+    <link rel="stylesheet" href="app.css" />
   </head>
   <body>
-    <h1>IonXE Dimmer Control</h1>
-    <div class="row">
-      <button id="btn-health">Health</button>
-      <span id="health-out"></span>
+    <div class="topbar">
+      <div class="brand">IonXE</div>
+      <div class="spacer"></div>
+      <div class="svc">
+        <button id="btn-health" class="ghost">Health</button>
+        <span id="health-out" class="status"></span>
+      </div>
     </div>
-    <div class="row">
-      <label>Level (0-255): <input id="level" type="number" min="0" max="255" value="128"/></label>
-      <button id="send-levels">Send Levels (fill 512)</button>
+    <div class="tabs">
+      <a href="#console" id="tab-console" class="tab active">Console</a>
+      <a href="#desk" id="tab-desk" class="tab">Virtual Desk</a>
+      <a href="#magic" id="tab-magic" class="tab">Magic Sheet</a>
+      <a href="#patch" id="tab-patch" class="tab">Patch</a>
+      <a href="#dimmers" id="tab-dimmers" class="tab">Dimmers</a>
+      <a href="#cmd" id="tab-cmd" class="tab">Command Center</a>
+      <a href="#files" id="tab-files" class="tab">Files</a>
+      <a href="#color" id="tab-color" class="tab">Color</a>
+      <a href="#auth" id="tab-auth" class="tab">Auth</a>
     </div>
-    <div class="row">
-      <button id="get-frame">Get Frame (len)</button>
-      <span id="frame-len"></span>
+    <div id="view-console" class="view active">
+      <div class="row">
+        <button id="random-lut">Random LUT (256)</button>
+        <button id="get-frame">Get Frame (len)</button>
+        <span id="frame-len" class="status"></span>
+      </div>
+      <div class="row">
+        <label>Grand Master: <input id="grand-master" type="range" min="0" max="255" value="255"/></label>
+        <button id="blackout">Blackout</button>
+        <span id="gm-value" class="status"></span>
+      </div>
+      <div class="row">
+        <button id="prev-page">Prev</button>
+        <span>Page: <span id="page-num">1</span></span>
+        <button id="next-page">Next</button>
+      </div>
+      <div class="row">
+        <input id="scene-label" placeholder="Scene label"/>
+        <button id="save-scene">Save Scene</button>
+        <button id="refresh-scenes">Refresh Scenes</button>
+        <select id="scenes-list"></select>
+        <input id="fade-ms" type="number" min="0" step="50" value="0" placeholder="Fade ms"/>
+        <button id="recall-scene">Recall</button>
+        <button id="export-scenes">Export</button>
+        <input id="import-file" type="file" accept="application/json" style="display:none"/>
+        <button id="import-scenes">Import</button>
+        <button id="delete-scene">Delete</button>
+      </div>
+      <div class="console" id="console"></div>
     </div>
-    <div class="row">
-      <button id="random-lut">Random LUT (256)</button>
+    <div id="view-desk" class="view">
+      <div class="desk">
+        <div class="desk-left">
+          <div class="num-keypad">
+            <button>7</button><button>8</button><button>9</button>
+            <button>4</button><button>5</button><button>6</button>
+            <button>1</button><button>2</button><button>3</button>
+            <button>0</button><button>+</button><button>-</button>
+          </div>
+          <div class="intensity">
+            <button>Full</button><button>Out</button><button>@</button>
+          </div>
+        </div>
+        <div class="desk-right">
+          <div class="softkeys">
+            <button>Macro</button><button>Record</button><button>Update</button>
+            <button>Clear</button><button>Blind</button><button>Live</button>
+          </div>
+        </div>
+      </div>
     </div>
-    <script>
-      const base = '';
-      document.getElementById('btn-health').onclick = async () => {
-        const r = await fetch(base + '/health');
-        const j = await r.json();
-        document.getElementById('health-out').textContent = JSON.stringify(j);
-      };
-      document.getElementById('send-levels').onclick = async () => {
-        const v = Math.max(0, Math.min(255, parseInt(document.getElementById('level').value||'0',10)));
-        const buf = new Uint8Array(512).fill(v);
-        const r = await fetch(base + '/api/v1/dimmers/levels', { method: 'PUT', body: buf });
-        alert('levels status: ' + r.status);
-      };
-      document.getElementById('get-frame').onclick = async () => {
-        const r = await fetch(base + '/api/v1/dimmers/frame');
-        const b = new Uint8Array(await r.arrayBuffer());
-        document.getElementById('frame-len').textContent = '' + b.length + ' bytes';
-      };
-      document.getElementById('random-lut').onclick = async () => {
-        const lut = new Uint8Array(256);
-        crypto.getRandomValues(lut);
-        const r = await fetch(base + '/api/v1/dimmers/lut', { method: 'PUT', body: lut });
-        alert('lut status: ' + r.status);
-      };
-    </script>
+    <div id="view-magic" class="view">
+      <div class="magic-toolbar">
+        <button class="ghost">Select</button>
+        <button class="ghost">Pan</button>
+        <button class="ghost">Zoom</button>
+        <div class="spacer"></div>
+        <button class="ghost">Add Node</button>
+      </div>
+      <canvas id="magic-canvas" width="1200" height="700"></canvas>
+    </div>
+    <div id="view-patch" class="view">
+      <div class="row">
+        <button id="patch-add">Add</button>
+        <button id="patch-save">Save</button>
+      </div>
+      <table id="patch-table">
+        <thead><tr><th>Chan</th><th>Fixture</th><th>Universe</th><th>Address</th><th>Label</th></tr></thead>
+        <tbody></tbody>
+      </table>
+    </div>
+    <div id="view-dimmers" class="view">
+      <div class="row">
+        <button id="dimmer-load">Load Racks</button>
+        <button id="dimmer-save">Save</button>
+      </div>
+      <table id="dimmer-table">
+        <thead><tr><th>Rack</th><th>Slot</th><th>Profile</th><th>Label</th></tr></thead>
+        <tbody></tbody>
+      </table>
+    </div>
+    <div id="view-color" class="view">
+      <div class="row">
+        <input type="color" id="color-picker" value="#ffffff"/>
+        <input id="color-bases" placeholder="Base addresses (e.g., 1,4,7)"/>
+        <button id="color-apply">Apply RGB</button>
+      </div>
+      <div class="row">
+        <input id="intens-chans" placeholder="Channels (e.g., 1-24,31)"/>
+        <input id="intens-value" type="number" min="0" max="255" value="255"/>
+        <button id="intens-apply">Apply Intensity</button>
+      </div>
+    </div>
+    <div id="view-auth" class="view">
+      <div class="row">
+        <input id="auth-username" placeholder="Username"/>
+        <input id="auth-password" type="password" placeholder="Password"/>
+        <button id="auth-login">Login</button>
+        <span id="auth-status" class="status"></span>
+      </div>
+    </div>
+    <div id="view-cmd" class="view">
+      <div class="row">
+        <input id="cmd-input" placeholder=": Chan @ Full ..." style="flex:1"/>
+        <button id="cmd-send">Send</button>
+      </div>
+      <pre id="cmd-output" class="panel" style="min-height:200px"></pre>
+    </div>
+    <div id="view-files" class="view">
+      <div class="row">
+        <input id="files-path" value="" placeholder="subpath under build/"/>
+        <button id="files-list">List</button>
+        <button id="files-mkdir">New Folder</button>
+      </div>
+      <table id="files-table">
+        <thead><tr><th>Name</th><th>Kind</th><th>Size</th><th>Actions</th></tr></thead>
+        <tbody></tbody>
+      </table>
+      <div class="row">
+        <input id="files-newname" placeholder="new.txt"/>
+        <textarea id="files-content" placeholder="file contents" style="flex:1; height:160px"></textarea>
+        <button id="files-save">Save File</button>
+      </div>
+    </div>
+    <script src="app.js"></script>
   </body>
   </html>
 

@@ -3,10 +3,12 @@ CFLAGS ?= -O2 -Wall -Wextra -std=c11
 LDFLAGS ?=
 
 BIN := ionxe-backend-c
-SRC := src/main.c src/http.c src/json.c src/state.c src/dimmer.c
+SRC := src/main.c src/handlers.c src/http.c src/json.c src/state.c src/dimmer.c
 ASM :=
 ifeq ($(shell uname -m),arm64)
 ASM := src/dimmer_arm64.S
+else ifeq ($(shell uname -m),x86_64)
+ASM := src/dimmer_x86_64.S
 endif
 OBJ := $(SRC:.c=.o) $(ASM:.S=.o)
 

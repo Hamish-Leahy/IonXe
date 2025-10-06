@@ -11,6 +11,8 @@ pub struct FramebufferInfo {
 
 #[repr(C)]
 pub struct BootInfo {
+    pub magic: u32,
+    pub version: u32,
     pub rsdp_addr: u64,
     pub memory_map_ptr: u64,
     pub memory_map_len: u32,

@@ -19,6 +19,8 @@ anyhow = "1"
 time = { version = "0.3", features = ["macros"] }
 once_cell = "1"
 tower-http = { version = "0.5", features = ["cors", "trace"] }
+jsonwebtoken = "9"
+bcrypt = "0.15"
 
 [lib]
 name = "ionxe_backend"

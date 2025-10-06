@@ -19,5 +19,7 @@ dotenvy = "0.15"
 url = "2"
 hyper-util = { version = "0.1", features = ["client", "http1", "client-legacy"] }
 http-body-util = "0.1"
+jsonwebtoken = "9"
+bcrypt = "0.15"
 
 

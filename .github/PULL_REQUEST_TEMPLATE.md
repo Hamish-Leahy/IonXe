@@ -1,13 +1,13 @@
 ## Summary
 
 ## Changes
+- 
 
-## How to test
-
-## Screenshots (if UI)
+## Test Plan
+- 
 
 ## Checklist
-- [ ] Tests added/updated (if applicable)
-- [ ] Docs updated (if applicable)
-- [ ] ADR referenced/added (if applicable)
+- [ ] Tests added/updated if needed
+- [ ] Docs updated if needed
+- [ ] Lint passes (`make lint`) and build green (`make build`)
 

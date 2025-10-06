@@ -47,6 +47,7 @@ fn efi_main(image_handle: Handle, mut st: SystemTable<Boot>) -> Status {
         pixels_per_scan_line: mode.stride() as u32,
         pixel_format,
     };
+    let _ = writeln!(st.stdout(), "GOP: {}x{} stride={} fmt={}", fb_info.width, fb_info.height, fb_info.pixels_per_scan_line, fb_info.pixel_format);
 
     // 2) Open root filesystem and read \\ionxe\\kernel.elf
     let sfs_handle = st
@@ -175,7 +176,15 @@ fn efi_main(image_handle: Handle, mut st: SystemTable<Boot>) -> Status {
         .allocate_pages(AllocateType::AnyPages, MemoryType::LOADER_DATA, 1)
         .expect_success("alloc bootinfo")
         .unwrap();
-    let bootinfo = BootInfo { rsdp_addr, memory_map_ptr: map_buf.as_ptr() as u64, memory_map_len: map_len as u32, memory_map_desc_size: desc_size as u32, framebuffer: fb_info };
+    let bootinfo = BootInfo {
+        magic: 0x58454e49, // 'INEX' little-endian
+        version: 1,
+        rsdp_addr,
+        memory_map_ptr: map_buf.as_ptr() as u64,
+        memory_map_len: map_len as u32,
+        memory_map_desc_size: desc_size as u32,
+        framebuffer: fb_info,
+    };
     unsafe {
         (bootinfo_ptr as *mut BootInfo).write(bootinfo);
     }

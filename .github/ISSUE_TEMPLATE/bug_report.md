@@ -10,11 +10,11 @@ labels: bug
 
 ### Expected behavior
 
-### Screenshots/logs
+### Screenshots / Logs
 
 ### Environment
-- Commit hash/branch:
 - OS:
+- Version/commit:
 
 ### Additional context
 
