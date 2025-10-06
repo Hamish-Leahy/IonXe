@@ -5,6 +5,7 @@
 
 #include <stdio.h>
 #include <string.h>
+#include <stdlib.h>
 
 static void respond_json(http_response *res, int status, const char *json) {
     res->status = status;
