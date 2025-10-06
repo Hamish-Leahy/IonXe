@@ -23,8 +23,12 @@ int state_read(const char *path, buffer *out) {
 }
 
 int state_write(const char *path, const char *data, size_t len) {
-    // ensure dir exists: build/state
-    (void)!system("mkdir -p build/state");
+    // ensure dir exists from env or default
+    const char *dir = getenv("IONXE_STATE_DIR");
+    if (!dir || !*dir) dir = "build/state";
+    char cmd[512];
+    snprintf(cmd, sizeof(cmd), "mkdir -p %s", dir);
+    (void)!system(cmd);
     FILE *f = fopen(path, "wb");
     if (!f) return -1;
     size_t n = fwrite(data, 1, len, f);

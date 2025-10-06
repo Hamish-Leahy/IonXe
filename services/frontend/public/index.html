@@ -1,0 +1,60 @@
+<!doctype html>
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>IonXE Control</title>
+    <style>
+      body { font-family: system-ui, sans-serif; margin: 2rem; }
+      .row { display: flex; gap: .5rem; align-items: center; margin-bottom: .5rem; }
+      input[type="number"] { width: 5rem; }
+      textarea { width: 100%; height: 8rem; }
+      button { padding: .4rem .8rem; }
+    </style>
+  </head>
+  <body>
+    <h1>IonXE Dimmer Control</h1>
+    <div class="row">
+      <button id="btn-health">Health</button>
+      <span id="health-out"></span>
+    </div>
+    <div class="row">
+      <label>Level (0-255): <input id="level" type="number" min="0" max="255" value="128"/></label>
+      <button id="send-levels">Send Levels (fill 512)</button>
+    </div>
+    <div class="row">
+      <button id="get-frame">Get Frame (len)</button>
+      <span id="frame-len"></span>
+    </div>
+    <div class="row">
+      <button id="random-lut">Random LUT (256)</button>
+    </div>
+    <script>
+      const base = '';
+      document.getElementById('btn-health').onclick = async () => {
+        const r = await fetch(base + '/health');
+        const j = await r.json();
+        document.getElementById('health-out').textContent = JSON.stringify(j);
+      };
+      document.getElementById('send-levels').onclick = async () => {
+        const v = Math.max(0, Math.min(255, parseInt(document.getElementById('level').value||'0',10)));
+        const buf = new Uint8Array(512).fill(v);
+        const r = await fetch(base + '/api/v1/dimmers/levels', { method: 'PUT', body: buf });
+        alert('levels status: ' + r.status);
+      };
+      document.getElementById('get-frame').onclick = async () => {
+        const r = await fetch(base + '/api/v1/dimmers/frame');
+        const b = new Uint8Array(await r.arrayBuffer());
+        document.getElementById('frame-len').textContent = '' + b.length + ' bytes';
+      };
+      document.getElementById('random-lut').onclick = async () => {
+        const lut = new Uint8Array(256);
+        crypto.getRandomValues(lut);
+        const r = await fetch(base + '/api/v1/dimmers/lut', { method: 'PUT', body: lut });
+        alert('lut status: ' + r.status);
+      };
+    </script>
+  </body>
+  </html>
+
+

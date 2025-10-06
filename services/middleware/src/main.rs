@@ -5,7 +5,7 @@ use axum::body::Body;
 use http_body_util::BodyExt as _; // for collect
 use hyper_util::client::legacy::Client as LegacyClient;
 use hyper_util::rt::TokioExecutor;
-use tower_http::{cors::{Any, CorsLayer}, trace::TraceLayer};
+use tower_http::{cors::{Any, CorsLayer}, services::ServeDir, trace::TraceLayer};
 use tracing::{error, info};
 
 #[derive(Clone)]
@@ -34,12 +34,14 @@ async fn main() -> anyhow::Result<()> {
         .max_age(Duration::from_secs(3600));
 
     let app = Router::new()
+        .nest_service("/", ServeDir::new("services/frontend/public").append_index_html_on_directories(true))
         .route("/*path", any(proxy))
         .with_state(state)
         .layer(cors)
         .layer(TraceLayer::new_for_http());
 
-    let addr: SocketAddr = "127.0.0.1:8082".parse().unwrap();
+    let bind = std::env::var("IONXE_MIDDLEWARE_BIND").unwrap_or_else(|_| "127.0.0.1:8082".into());
+    let addr: SocketAddr = bind.parse().unwrap();
     info!("middleware listening on {}", addr);
     let listener = tokio::net::TcpListener::bind(addr).await?;
     axum::serve(listener, app).await?;

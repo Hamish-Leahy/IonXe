@@ -13,7 +13,8 @@ async fn main() -> anyhow::Result<()> {
 
     let app: Router = build_router();
 
-    let addr: SocketAddr = "127.0.0.1:8080".parse().unwrap();
+    let addr_str = std::env::var("IONXE_BACKEND_BIND").unwrap_or_else(|_| "127.0.0.1:8080".into());
+    let addr: SocketAddr = addr_str.parse().unwrap();
     info!("listening on {}", addr);
 
     let listener = tokio::net::TcpListener::bind(addr).await?;

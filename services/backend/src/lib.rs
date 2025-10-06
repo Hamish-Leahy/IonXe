@@ -73,12 +73,15 @@ impl Default for OutputKind { fn default() -> Self { OutputKind::SAcN { host: "1
 pub fn init_state_from_disk(version: &str) {
     let mut st = APP_STATE.write();
     st.version = version.to_string();
-    if let Ok(bytes) = std::fs::read("build/state/patch.json") {
+    let state_dir = std::env::var("IONXE_STATE_DIR").unwrap_or_else(|_| "build/state".into());
+    let patch_path = format!("{}/patch.json", state_dir);
+    let routing_path = format!("{}/routing.json", state_dir);
+    if let Ok(bytes) = std::fs::read(&patch_path) {
         if let Ok(saved) = serde_json::from_slice::<PatchState>(&bytes) {
             st.patch = saved;
         }
     }
-    if let Ok(bytes) = std::fs::read("build/state/routing.json") {
+    if let Ok(bytes) = std::fs::read(&routing_path) {
         if let Ok(saved) = serde_json::from_slice::<RoutingConfig>(&bytes) {
             st.routing = saved;
         }
@@ -155,14 +158,18 @@ pub async fn put_routing(Json(new_routing): Json<RoutingConfig>) -> axum::http::
 
 fn persist_patch() {
     let st = APP_STATE.read();
-    let _ = std::fs::create_dir_all("build/state");
-    let _ = std::fs::write("build/state/patch.json", serde_json::to_vec_pretty(&st.patch).unwrap());
+    let state_dir = std::env::var("IONXE_STATE_DIR").unwrap_or_else(|_| "build/state".into());
+    let _ = std::fs::create_dir_all(&state_dir);
+    let path = format!("{}/patch.json", state_dir);
+    let _ = std::fs::write(path, serde_json::to_vec_pretty(&st.patch).unwrap());
 }
 
 fn persist_routing() {
     let st = APP_STATE.read();
-    let _ = std::fs::create_dir_all("build/state");
-    let _ = std::fs::write("build/state/routing.json", serde_json::to_vec_pretty(&st.routing).unwrap());
+    let state_dir = std::env::var("IONXE_STATE_DIR").unwrap_or_else(|_| "build/state".into());
+    let _ = std::fs::create_dir_all(&state_dir);
+    let path = format!("{}/routing.json", state_dir);
+    let _ = std::fs::write(path, serde_json::to_vec_pretty(&st.routing).unwrap());
 }
 
 

@@ -1,0 +1,32 @@
+version: '3.8'
+services:
+  backend:
+    build: ./services/backend
+    ports:
+      - "8080:8080"
+    volumes:
+      - ./build/state:/app/build/state
+  backend-c:
+    build: ./services/backend-c
+    ports:
+      - "8081:8081"
+    volumes:
+      - ./build/state:/app/build/state
+  middleware:
+    build: ./services/middleware
+    environment:
+      - BACKEND_RS=http://backend:8080
+      - BACKEND_C=http://backend-c:8081
+    ports:
+      - "8082:8082"
+    depends_on:
+      - backend
+      - backend-c
+  frontend:
+    build: ./services/frontend
+    ports:
+      - "8083:80"
+    depends_on:
+      - middleware
+
+
