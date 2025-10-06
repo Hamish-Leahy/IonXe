@@ -1,7 +1,8 @@
 use std::{net::SocketAddr, time::Duration};
 
-use axum::{extract::State, http::{HeaderValue, Method, Request, StatusCode, Uri}, response::IntoResponse, routing::any, Router};
-use hyper::{body::to_bytes, Body, Client};
+use axum::{extract::State, http::{HeaderValue, Request, StatusCode, Uri}, response::IntoResponse, routing::any, Router};
+use axum::body::Body;
+use http_body_util::BodyExt as _; // for collect
 use hyper_util::client::legacy::Client as LegacyClient;
 use hyper_util::rt::TokioExecutor;
 use tower_http::{cors::{Any, CorsLayer}, trace::TraceLayer};
@@ -57,11 +58,9 @@ async fn proxy(State(st): State<MiddlewareState>, mut req: Request<Body>) -> imp
         Ok(resp) => {
             let status = resp.status();
             let headers = resp.headers().clone();
-            let body_bytes = to_bytes(resp.into_body()).await.unwrap_or_default();
+            let body_bytes = resp.into_body().collect().await.map(|c| c.to_bytes()).unwrap_or_default();
             let mut builder = axum::http::Response::builder().status(status);
-            for (k, v) in headers.iter() {
-                if let Some(k) = k { builder = builder.header(k, v.clone()); }
-            }
+            for (k, v) in headers.iter() { builder = builder.header(k, v); }
             builder
                 .header(axum::http::header::ACCESS_CONTROL_ALLOW_ORIGIN, HeaderValue::from_static("*"))
                 .body(Body::from(body_bytes))
