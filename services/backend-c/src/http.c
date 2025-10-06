@@ -96,20 +96,62 @@ static route_entry* find_route(const char *method, const char *path) {
 }
 
 static void serve_client(int client_fd) {
-    char buf[8192];
-    ssize_t n = recv(client_fd, buf, sizeof(buf) - 1, 0);
-    if (n <= 0) { close(client_fd); return; }
-    buf[n] = '\0';
+    size_t cap = 16384;
+    size_t len = 0;
+    char *buf = (char*)malloc(cap);
+    if (!buf) { close(client_fd); return; }
+
+    // Read until we have full headers (\r\n\r\n)
+    const char *hdr_end = NULL;
+    while (1) {
+        if (len == cap) { cap *= 2; char *nb = (char*)realloc(buf, cap); if (!nb) { free(buf); close(client_fd); return; } buf = nb; }
+        ssize_t n = recv(client_fd, buf + len, (int)(cap - len), 0);
+        if (n <= 0) { free(buf); close(client_fd); return; }
+        len += (size_t)n;
+        buf[len] = '\0';
+        hdr_end = strstr(buf, "\r\n\r\n");
+        if (hdr_end) break;
+        if (len > 1024 * 1024) { free(buf); close(client_fd); return; } // header too large
+    }
 
     http_request req;
-    parse_request(buf, n, &req);
+    parse_request(buf, (ssize_t)len, &req);
+
+    // If there is a Content-Length greater than the bytes we've got, keep reading body
+    const char *cl_hdr = strcasestr(buf, "Content-Length:");
+    size_t content_len = 0;
+    if (cl_hdr) content_len = (size_t)strtoul(cl_hdr + strlen("Content-Length:"), NULL, 10);
+    size_t have_body = 0;
+    if (hdr_end) {
+        const char *body = hdr_end + 4;
+        have_body = (size_t)(buf + len - body);
+    }
+    while (content_len > 0 && have_body < content_len) {
+        if (len == cap) { cap *= 2; char *nb = (char*)realloc(buf, cap); if (!nb) { free(buf); close(client_fd); return; } buf = nb; }
+        ssize_t n = recv(client_fd, buf + len, (int)(cap - len), 0);
+        if (n <= 0) break;
+        len += (size_t)n;
+        buf[len] = '\0';
+        hdr_end = strstr(buf, "\r\n\r\n");
+        const char *body = hdr_end ? hdr_end + 4 : NULL;
+        have_body = body ? (size_t)(buf + len - body) : 0;
+    }
+
+    // Re-parse now that we likely have full body
+    parse_request(buf, (ssize_t)len, &req);
 
     http_response res = {200, "application/json", "{}", 2};
-    route_entry *route = find_route(req.method, req.path);
-    if (route && route->handler) {
-        route->handler(&req, &res);
+
+    // Handle CORS preflight for any path
+    if (req.method && strcasecmp(req.method, "OPTIONS") == 0) {
+        res.status = 204; res.content_type = "text/plain"; res.body = ""; res.body_len = 0;
     } else {
-        default_not_found(&req, &res);
+        route_entry *route = find_route(req.method, req.path);
+        if (route && route->handler) {
+            route->handler(&req, &res);
+        } else {
+            default_not_found(&req, &res);
+        }
     }
 
     char header[1024];
@@ -128,6 +170,7 @@ static void serve_client(int client_fd) {
     if (res.body && res.body_len > 0) {
         send(client_fd, res.body, res.body_len, 0);
     }
+    free(buf);
     close(client_fd);
 }
 

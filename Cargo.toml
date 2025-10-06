@@ -2,6 +2,7 @@
 members = [
     "services/backend",
     "bootloader/uefi",
+    "services/middleware",
 ]
 resolver = "2"
 

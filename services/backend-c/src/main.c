@@ -1,6 +1,7 @@
 #include "http.h"
 #include "json.h"
 #include "state.h"
+#include "dimmer.h"
 
 #include <stdio.h>
 #include <string.h>
@@ -10,6 +11,16 @@ static void respond_json(http_response *res, int status, const char *json) {
     res->content_type = "application/json";
     res->body = json;
     res->body_len = strlen(json);
+}
+
+static void respond_json_len(http_response *res, int status, size_t v) {
+    static char buf[64];
+    int n = snprintf(buf, sizeof(buf), "{\"len\":%zu}", v);
+    if (n < 0) n = 0; if (n > (int)sizeof(buf)) n = (int)sizeof(buf);
+    res->status = status;
+    res->content_type = "application/json";
+    res->body = buf;
+    res->body_len = (size_t)n;
 }
 
 static void handle_health(const http_request *req, http_response *res) {
@@ -80,7 +91,34 @@ static void put_dimmer_config(const http_request *req, http_response *res) {
     handle_put_file(req, "build/state/dimmer_config.json", res);
 }
 
+static void put_dimmer_levels(const http_request *req, http_response *res) {
+    if (req->body_len != DMX_SLOTS) {
+        respond_json_len(res, 400, req->body_len);
+        return;
+    }
+    if (dimmer_set_levels((const uint8_t*)req->body, req->body_len) != 0) {
+        respond_json(res, 400, "{\"error\":\"invalid levels\"}");
+        return;
+    }
+    res->status = 204; res->content_type = "application/octet-stream"; res->body = ""; res->body_len = 0;
+}
+
+static void put_dimmer_lut(const http_request *req, http_response *res) {
+    if (dimmer_set_lut((const uint8_t*)req->body, req->body_len) != 0) {
+        respond_json(res, 400, "{\"error\":\"lut size must be 256\"}");
+        return;
+    }
+    res->status = 204; res->content_type = "application/octet-stream"; res->body = ""; res->body_len = 0;
+}
+
+static void get_dimmer_frame(const http_request *req, http_response *res) {
+    (void)req;
+    size_t n = 0; const uint8_t *frame = dimmer_get_frame(&n);
+    res->status = 200; res->content_type = "application/octet-stream"; res->body = (const char*)frame; res->body_len = n;
+}
+
 int main(void) {
+    dimmer_init();
     http_register("GET", "/health", handle_health);
     http_register("GET", "/api/v1/patch", get_patch);
     http_register("PUT", "/api/v1/patch", put_patch);
@@ -90,6 +128,14 @@ int main(void) {
     http_register("PUT", "/api/v1/dimmers/racks", put_dimmer_racks);
     http_register("GET", "/api/v1/dimmers/config", get_dimmer_config);
     http_register("PUT", "/api/v1/dimmers/config", put_dimmer_config);
+
+    // Binary endpoints for dimmer engine
+    // PUT /api/v1/dimmers/levels  (raw 512 bytes)
+    // PUT /api/v1/dimmers/lut     (raw 256 bytes)
+    // GET /api/v1/dimmers/frame   (raw 512 bytes)
+    http_register("PUT", "/api/v1/dimmers/levels", put_dimmer_levels);
+    http_register("PUT", "/api/v1/dimmers/lut", put_dimmer_lut);
+    http_register("GET", "/api/v1/dimmers/frame", get_dimmer_frame);
 
     return http_serve("127.0.0.1", 8081);
 }
