@@ -1,58 +1,236 @@
-# Open IonXE OS
+# IonXE - Open Source Lighting Control System
 
-An open-source, from-scratch operating system and firmware stack inspired by the Eos IonXE lighting console, designed for modern hardware with an easier learning curve and extensible architecture.
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
+[![Rust](https://img.shields.io/badge/rust-%23000000.svg?style=flat&logo=rust&logoColor=white)](https://www.rust-lang.org)
+[![C](https://img.shields.io/badge/c-%2300599C.svg?style=flat&logo=c&logoColor=white)](https://www.cprogramming.com)
+[![JavaScript](https://img.shields.io/badge/javascript-%23323330.svg?style=flat&logo=javascript&logoColor=%23F7DF1E)](https://developer.mozilla.org/en-US/docs/Web/JavaScript)
 
-This project aims to deliver BIOS/bootloader, kernel, drivers, and userland tailored to stage lighting control workflows, with a clean, approachable developer experience. No proprietary code or assets from ETC are used; this work is community-built and legally clean-room by design.
+An open-source, from-scratch lighting control system inspired by the Eos IonXE console, designed for modern hardware with an easier learning curve and extensible architecture. Built with Rust, C, and modern web technologies.
 
-## Vision and Scope
+## ✨ Features
 
-* Build a complete boot-to-desk stack: firmware → bootloader → kernel → device drivers → services → UI.
-* Target x86-64 initially; keep ARM64 in scope. Support common peripherals used in lighting consoles.
-* Prioritize reliability, low-latency I/O, and predictable performance over raw throughput.
-* Provide first-class developer tooling, documentation, and an approachable UX for new users.
+### 🎛️ **Advanced Fader Control**
+- **512 DMX Channels** - Full professional lighting control
+- **Bank Management** - 4 banks of 6 faders each with easy navigation
+- **Page System** - 24 faders per page with smooth scrolling
+- **Real-time Updates** - Live fader position synchronization
+- **Grand Master** - Global intensity control with blackout functionality
 
-## Repository Structure
+### 🎮 **Virtual Desk Interface**
+- **Number Keypad** - Channel selection and navigation
+- **Intensity Controls** - Full, Out, and @ (prompt) buttons
+- **Softkeys** - Macro, Record, Update, Clear, Blind, Live modes
+- **Channel Selection** - Click-to-select with multi-select support
+- **Visual Feedback** - Real-time button states and channel highlighting
+
+### 🎬 **Scene Management**
+- **Save/Recall Scenes** - Store and recall complete lighting states
+- **Fade Control** - Smooth transitions with customizable timing
+- **Import/Export** - JSON-based scene sharing and backup
+- **Live Preview** - Real-time scene editing and testing
+
+### 🤖 **Macro System**
+- **Recording** - Capture complex lighting sequences
+- **Playback** - Execute recorded macros with timing control
+- **Management** - Save, load, and organize macro libraries
+- **Step-by-step** - Visual macro editor with parameter display
+- **Integration** - Seamless integration with all control features
+
+### 🎨 **Color & Intensity Control**
+- **RGB Color Picker** - Intuitive color selection
+- **Channel Ranges** - Control multiple channels simultaneously
+- **Intensity Scaling** - Precise level control (0-255)
+- **Real-time Updates** - Instant visual feedback
+
+### 🌐 **Network & Protocol Support**
+- **Art-Net** - Industry-standard lighting protocol
+- **sACN (E1.31)** - Streaming ACN for professional networks
+- **RESTful API** - Complete HTTP API for integration
+- **WebSocket Support** - Real-time bidirectional communication
+
+### 🔧 **Developer Features**
+- **Modular Architecture** - Clean, maintainable codebase
+- **RESTful API** - Complete backend API for all features
+- **File Management** - Built-in file system operations
+- **Command Center** - Shell access for advanced users
+- **Health Monitoring** - System status and diagnostics
+
+### 🔐 **Security & Authentication**
+- **User Management** - Multi-user support with roles
+- **JWT Authentication** - Secure token-based auth
+- **Profile System** - User preferences and settings
+- **Admin Controls** - Lock/unlock and user management
+
+## 🏗️ **Architecture**
+
+### **Backend Services**
+- **Rust Backend** - High-performance API server with state management
+- **C Backend** - Low-level hardware control and DMX processing
+- **Middleware** - Request routing, rate limiting, and protocol translation
+
+### **Frontend**
+- **Modular JavaScript** - Clean, maintainable frontend architecture
+- **Responsive Design** - Works on desktop and tablet devices
+- **Real-time Updates** - Live synchronization across all controls
+
+### **Hardware Support**
+- **x86-64** - Primary target architecture
+- **ARM64** - Secondary target for embedded systems
+- **DMX512** - Professional lighting protocol support
+- **Network I/O** - Ethernet-based control and monitoring
+
+## 🚀 **Quick Start**
+
+### Prerequisites
+- Rust 1.70+ (for backend services)
+- C compiler (GCC/Clang)
+- Node.js 18+ (for development tools)
+- Docker (optional, for containerized deployment)
+
+### Installation
+
+1. **Clone the repository**
+   ```bash
+   git clone https://github.com/your-org/ionxe.git
+   cd ionxe
+   ```
+
+2. **Build the backend services**
+   ```bash
+   # Build Rust backend
+   cargo build --release --manifest-path services/backend/Cargo.toml
+   
+   # Build C backend
+   cd services/backend-c
+   make
+   cd ../..
+   
+   # Build middleware
+   cargo build --release --manifest-path services/middleware/Cargo.toml
+   ```
+
+3. **Start the services**
+   ```bash
+   # Start all services
+   ./scripts/dev_start.sh
+   
+   # Or start individually
+   ./target/release/ionxe-backend &
+   ./services/backend-c/ionxe-backend-c &
+   ./target/release/ionxe-middleware &
+   ```
+
+4. **Access the web interface**
+   Open your browser to `http://localhost:8082`
+
+## 📁 **Project Structure**
 
 ```
-bootloader/      # Early init, hardware bring-up, handoff to kernel
-firmware/        # Platform firmware or coreboot configs (if applicable)
-hardware/        # Public research notes, schematics (non-proprietary), BOMs
-os/              # Kernel, drivers, HAL, subsystems, userland
-  kernel/
-  drivers/
-  hal/
-  fs/
-  net/
-  audio/
-  graphics/
-  lib/
-  userland/
-  config/
-tools/           # Developer tools and utilities
-scripts/         # Build and developer scripts
-build/           # Build outputs and toolchain configs
-ci/              # Continuous integration configs
-docs/            # Documentation, ADRs, user guides, API refs
-examples/        # Example apps, demos, reference configurations
-specs/           # Public specifications and interface contracts
-third_party/     # Third-party code and licenses
+ionxe/
+├── bootloader/          # UEFI bootloader and early initialization
+├── os/                  # Operating system kernel and drivers
+│   ├── kernel/         # Core kernel functionality
+│   ├── drivers/        # Hardware drivers
+│   ├── hal/            # Hardware abstraction layer
+│   ├── fs/             # File system
+│   ├── net/            # Network stack
+│   ├── audio/          # Audio subsystem
+│   ├── graphics/       # Graphics and display
+│   └── userland/       # User space applications
+├── services/           # Backend services
+│   ├── backend/        # Rust API server
+│   ├── backend-c/      # C hardware control
+│   ├── middleware/     # Request routing and protocol translation
+│   └── frontend/       # Web interface
+├── hardware/           # Hardware specifications and research
+├── docs/               # Documentation and guides
+├── scripts/            # Build and development scripts
+├── tools/              # Developer utilities
+└── examples/           # Example configurations and demos
 ```
 
-## Getting Started
+## 🎯 **Use Cases**
 
-1. See `docs/overview/` for the big picture and glossary.
-2. Read `docs/architecture/` for the boot, kernel, and subsystem designs.
-3. Follow `docs/build/` to set up your toolchains and build the project.
-4. Explore `docs/development/` for contribution flow, code style, and testing.
+### **Professional Lighting**
+- Theater and concert lighting control
+- Architectural lighting systems
+- Event and venue management
+- Studio and broadcast lighting
 
-## Contributing
+### **Education & Training**
+- Lighting design education
+- Technical training programs
+- Prototype development
+- Research and experimentation
 
-Please read `CONTRIBUTING.md`, `CODE_OF_CONDUCT.md`, and `SECURITY.md` before contributing. We welcome issues, proposals, and pull requests. Architecture Decision Records (ADRs) live in `docs/adr/`.
+### **Integration & Automation**
+- Home automation systems
+- IoT lighting control
+- Custom control solutions
+- API-driven lighting applications
 
-## Legal and Ethics
+## 🤝 **Contributing**
 
-This project is community-run and not affiliated with ETC. We do not accept or use proprietary code, confidential materials, or trademarks beyond fair use. Contributors must ensure compliance with licenses and applicable laws.
+We welcome contributions from the community! Here's how you can help:
 
-## Roadmap
+### **Ways to Contribute**
+- 🐛 **Bug Reports** - Help us identify and fix issues
+- 💡 **Feature Requests** - Suggest new functionality
+- 📝 **Documentation** - Improve guides and API docs
+- 🔧 **Code Contributions** - Submit pull requests
+- 🧪 **Testing** - Help test new features and fixes
 
-High-level milestones are tracked in `ROADMAP.md`, with granular tasks in `TODO.md`.
+### **Getting Started**
+1. Read our [Contributing Guide](CONTRIBUTING.md)
+2. Check our [Code of Conduct](CODE_OF_CONDUCT.md)
+3. Review the [Development Setup](docs/development/README.md)
+4. Look at open issues or start a discussion
+
+### **Development Workflow**
+1. Fork the repository
+2. Create a feature branch (`git checkout -b feature/amazing-feature`)
+3. Make your changes
+4. Add tests if applicable
+5. Commit your changes (`git commit -m 'Add amazing feature'`)
+6. Push to the branch (`git push origin feature/amazing-feature`)
+7. Open a Pull Request
+
+## 📚 **Documentation**
+
+- **[Architecture Overview](docs/architecture/README.md)** - System design and components
+- **[API Reference](docs/api/README.md)** - Complete API documentation
+- **[User Guide](docs/user/README.md)** - End-user documentation
+- **[Developer Guide](docs/development/README.md)** - Development setup and guidelines
+- **[Hardware Guide](docs/hardware/README.md)** - Hardware requirements and setup
+
+## 🛡️ **Security**
+
+We take security seriously. Please review our [Security Policy](SECURITY.md) and report any vulnerabilities to security@ionxe.dev.
+
+## 📄 **License**
+
+This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
+
+## 🙏 **Acknowledgments**
+
+- **ETC** - Inspiration from the Eos family of lighting consoles
+- **Rust Community** - Excellent language and ecosystem
+- **Open Source Community** - Countless libraries and tools
+- **Contributors** - Everyone who helps make this project better
+
+## 📞 **Support & Community**
+
+- **GitHub Issues** - Bug reports and feature requests
+- **Discussions** - Community discussions and Q&A
+- **Discord** - Real-time chat and support
+- **Email** - support@ionxe.dev
+
+## 🗺️ **Roadmap**
+
+See [ROADMAP.md](ROADMAP.md) for our development roadmap and upcoming features.
+
+---
+
+**Built with ❤️ by the IonXE community**
+
+*This project is not affiliated with ETC or any commercial lighting console manufacturer. It is a community-driven, open-source alternative inspired by professional lighting control systems.*
