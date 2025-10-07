@@ -41,6 +41,8 @@
         <button id="prev-page">Prev</button>
         <span>Page: <span id="page-num">1</span></span>
         <button id="next-page">Next</button>
+        <label><input type="checkbox" id="bank-mode"/> Bank Mode</label>
+        <span id="selected-channel" class="status">No Selection</span>
       </div>
       <div class="row">
         <input id="scene-label" placeholder="Scene label"/>
@@ -66,13 +68,13 @@
             <button>0</button><button>+</button><button>-</button>
           </div>
           <div class="intensity">
-            <button>Full</button><button>Out</button><button>@</button>
+            <button id="intensity-full">Full</button><button id="intensity-out">Out</button><button id="intensity-at">@</button>
           </div>
         </div>
         <div class="desk-right">
           <div class="softkeys">
-            <button>Macro</button><button>Record</button><button>Update</button>
-            <button>Clear</button><button>Blind</button><button>Live</button>
+            <button id="softkey-macro">Macro</button><button id="softkey-record">Record</button><button id="softkey-update">Update</button>
+            <button id="softkey-clear">Clear</button><button id="softkey-blind">Blind</button><button id="softkey-live">Live</button>
           </div>
         </div>
       </div>

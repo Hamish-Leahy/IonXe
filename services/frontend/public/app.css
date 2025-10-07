@@ -27,16 +27,28 @@ input, select { background: #0e151d; border: 1px solid #1b2a3a; color: var(--tex
 
 /* Console */
 .console { display: grid; grid-template-columns: repeat(24, 1fr); gap: 10px; margin-top: 1rem; }
-.fader { display: flex; flex-direction: column; align-items: center; background: var(--panel); padding: 8px; border-radius: 8px; }
+.fader { display: flex; flex-direction: column; align-items: center; background: var(--panel); padding: 8px; border-radius: 8px; transition: all 0.2s ease; }
 .fader input[type="range"] { writing-mode: bt-lr; -webkit-appearance: slider-vertical; width: 24px; height: 200px; }
-.fader label { margin-top: .25rem; font-size: 12px; color: var(--muted); }
+.fader label { margin-top: .25rem; font-size: 12px; color: var(--muted); cursor: pointer; }
+.fader.selected { background: var(--accent); }
+.fader.selected label { color: white; font-weight: bold; }
+
+/* Bank View */
+.bank-container { display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; margin-top: 1rem; }
+.fader-bank { background: var(--panel); border-radius: 8px; padding: 8px; }
+.bank-header { text-align: center; font-weight: bold; color: var(--accent); margin-bottom: 8px; padding-bottom: 4px; border-bottom: 1px solid #1b2a3a; }
+.fader-container { display: grid; grid-template-columns: repeat(6, 1fr); gap: 6px; }
 
 /* Desk */
 .desk { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
 .desk-left, .desk-right { background: var(--panel); padding: 12px; border-radius: 8px; }
 .num-keypad { display: grid; grid-template-columns: repeat(3, 60px); gap: 8px; }
+.num-keypad button { height: 40px; font-size: 16px; font-weight: bold; }
 .intensity { display: flex; gap: 8px; margin-top: 12px; }
+.intensity button { flex: 1; height: 40px; font-weight: bold; }
 .softkeys { display: grid; grid-template-columns: repeat(3, 100px); gap: 8px; }
+.softkeys button { height: 40px; font-weight: bold; }
+.softkeys button.active { background: var(--accent); border-color: var(--accent); color: white; }
 
 /* Magic sheet */
 .magic-toolbar { display: flex; gap: 8px; align-items: center; background: var(--panel); padding: 8px; border-radius: 8px; margin-bottom: 8px; }

@@ -27,6 +27,11 @@ pub fn build_router() -> Router {
         .route("/api/v1/fs/write", put(fs_write))
         .route("/api/v1/fs/delete", delete(fs_delete))
         .route("/api/v1/fs/mkdir", post(fs_mkdir))
+        // Fader and control endpoints
+        .route("/api/v1/controls/faders", get(get_fader_banks).put(put_fader_banks))
+        .route("/api/v1/controls/buttons", get(get_button_config).put(put_button_config))
+        .route("/api/v1/controls/macros", get(get_macros).post(create_macro).put(update_macro).delete(delete_macro))
+        .route("/api/v1/controls/execute", post(execute_macro))
         .with_state(())
         .layer(cors)
         .layer(TraceLayer::new_for_http())
@@ -209,6 +214,115 @@ pub async fn fs_delete(Query(q): Query<FsQuery>) -> impl axum::response::IntoRes
 pub async fn fs_mkdir(Query(q): Query<FsQuery>) -> impl axum::response::IntoResponse {
     let Some(path) = sanitize_path(&q.path) else { return axum::http::StatusCode::BAD_REQUEST; };
     match fs::create_dir_all(&path) { Ok(_) => axum::http::StatusCode::NO_CONTENT, Err(_) => axum::http::StatusCode::INTERNAL_SERVER_ERROR }
+}
+
+// Fader and Control Endpoints
+pub async fn get_fader_banks() -> Json<FaderConfig> {
+    let config = load_fader_config();
+    Json(config)
+}
+
+pub async fn put_fader_banks(Json(config): Json<FaderConfig>) -> axum::http::StatusCode {
+    save_fader_config(&config);
+    axum::http::StatusCode::NO_CONTENT
+}
+
+pub async fn get_button_config() -> Json<ButtonConfig> {
+    let config = load_button_config();
+    Json(config)
+}
+
+pub async fn put_button_config(Json(config): Json<ButtonConfig>) -> axum::http::StatusCode {
+    save_button_config(&config);
+    axum::http::StatusCode::NO_CONTENT
+}
+
+pub async fn get_macros() -> Json<Vec<Macro>> {
+    let macros = load_macros();
+    Json(macros)
+}
+
+pub async fn create_macro(Json(mut macro_data): Json<Macro>) -> Json<Macro> {
+    if macro_data.id == Uuid::nil() { macro_data.id = Uuid::new_v4(); }
+    let now = time::OffsetDateTime::now_utc().to_string();
+    macro_data.created_at = now.clone();
+    macro_data.updated_at = now;
+    
+    let mut macros = load_macros();
+    macros.push(macro_data.clone());
+    save_macros(&macros);
+    Json(macro_data)
+}
+
+pub async fn update_macro(Path(id): Path<String>, Json(mut macro_data): Json<Macro>) -> axum::http::StatusCode {
+    let id = match Uuid::parse_str(&id) { Ok(v) => v, Err(_) => return axum::http::StatusCode::BAD_REQUEST };
+    
+    let mut macros = load_macros();
+    if let Some(existing) = macros.iter_mut().find(|m| m.id == id) {
+        macro_data.id = id;
+        macro_data.created_at = existing.created_at.clone();
+        macro_data.updated_at = time::OffsetDateTime::now_utc().to_string();
+        *existing = macro_data;
+        save_macros(&macros);
+        axum::http::StatusCode::NO_CONTENT
+    } else {
+        axum::http::StatusCode::NOT_FOUND
+    }
+}
+
+pub async fn delete_macro(Path(id): Path<String>) -> axum::http::StatusCode {
+    let id = match Uuid::parse_str(&id) { Ok(v) => v, Err(_) => return axum::http::StatusCode::BAD_REQUEST };
+    
+    let mut macros = load_macros();
+    let before = macros.len();
+    macros.retain(|m| m.id != id);
+    if macros.len() != before {
+        save_macros(&macros);
+        axum::http::StatusCode::NO_CONTENT
+    } else {
+        axum::http::StatusCode::NOT_FOUND
+    }
+}
+
+#[derive(serde::Deserialize)]
+struct ExecuteMacroRequest { id: String }
+
+pub async fn execute_macro(Json(req): Json<ExecuteMacroRequest>) -> axum::http::StatusCode {
+    let id = match Uuid::parse_str(&req.id) { Ok(v) => v, Err(_) => return axum::http::StatusCode::BAD_REQUEST };
+    
+    let macros = load_macros();
+    if let Some(macro_data) = macros.iter().find(|m| m.id == id) {
+        // Execute macro steps (simplified - in real implementation, this would be async)
+        for step in &macro_data.steps {
+            // Process each step based on action type
+            match step.action.as_str() {
+                "set_intensity" => {
+                    if let Some(channels) = step.parameters.get("channels").and_then(|v| v.as_array()) {
+                        if let Some(value) = step.parameters.get("value").and_then(|v| v.as_u64()) {
+                            // Send intensity command to middleware
+                            let _ = reqwest::Client::new()
+                                .post("http://127.0.0.1:8082/api/v1/intensity")
+                                .json(&serde_json::json!({
+                                    "channels": channels,
+                                    "value": value as u8
+                                }))
+                                .send()
+                                .await;
+                        }
+                    }
+                }
+                "delay" => {
+                    if let Some(delay) = step.parameters.get("ms").and_then(|v| v.as_u64()) {
+                        tokio::time::sleep(tokio::time::Duration::from_millis(delay)).await;
+                    }
+                }
+                _ => {}
+            }
+        }
+        axum::http::StatusCode::NO_CONTENT
+    } else {
+        axum::http::StatusCode::NOT_FOUND
+    }
 }
 
 

@@ -69,4 +69,84 @@ pub fn save_profile(username: &str, p: &Profile) {
     let path = profiles_path(username); let _ = std::fs::create_dir_all(std::path::Path::new(&path).parent().unwrap()); let _ = std::fs::write(path, serde_json::to_vec_pretty(p).unwrap());
 }
 
+// Fader and Control persistence
+fn fader_config_path() -> String {
+    let state_dir = std::env::var("IONXE_STATE_DIR").unwrap_or_else(|_| "build/state".into());
+    format!("{}/fader_config.json", state_dir)
+}
+
+fn button_config_path() -> String {
+    let state_dir = std::env::var("IONXE_STATE_DIR").unwrap_or_else(|_| "build/state".into());
+    format!("{}/button_config.json", state_dir)
+}
+
+fn macros_path() -> String {
+    let state_dir = std::env::var("IONXE_STATE_DIR").unwrap_or_else(|_| "build/state".into());
+    format!("{}/macros.json", state_dir)
+}
+
+pub fn load_fader_config() -> FaderConfig {
+    let path = fader_config_path();
+    std::fs::read(&path)
+        .ok()
+        .and_then(|b| serde_json::from_slice(&b).ok())
+        .unwrap_or_default()
+}
+
+pub fn save_fader_config(config: &FaderConfig) {
+    let path = fader_config_path();
+    let _ = std::fs::create_dir_all(std::path::Path::new(&path).parent().unwrap());
+    let _ = std::fs::write(path, serde_json::to_vec_pretty(config).unwrap());
+}
+
+pub fn load_button_config() -> ButtonConfig {
+    let path = button_config_path();
+    std::fs::read(&path)
+        .ok()
+        .and_then(|b| serde_json::from_slice(&b).ok())
+        .unwrap_or_else(|| {
+            // Default button configuration
+            ButtonConfig {
+                softkeys: vec![
+                    Softkey { id: "macro".to_string(), label: "Macro".to_string(), function: "macro".to_string(), active: false },
+                    Softkey { id: "record".to_string(), label: "Record".to_string(), function: "record".to_string(), active: false },
+                    Softkey { id: "update".to_string(), label: "Update".to_string(), function: "update".to_string(), active: false },
+                    Softkey { id: "clear".to_string(), label: "Clear".to_string(), function: "clear".to_string(), active: false },
+                    Softkey { id: "blind".to_string(), label: "Blind".to_string(), function: "blind".to_string(), active: false },
+                    Softkey { id: "live".to_string(), label: "Live".to_string(), function: "live".to_string(), active: true },
+                ],
+                intensity_buttons: vec![
+                    IntensityButton { id: "full".to_string(), label: "Full".to_string(), value: 255, function: "set_intensity".to_string() },
+                    IntensityButton { id: "out".to_string(), label: "Out".to_string(), value: 0, function: "set_intensity".to_string() },
+                    IntensityButton { id: "at".to_string(), label: "@".to_string(), value: 0, function: "prompt_intensity".to_string() },
+                ],
+                keypad_config: KeypadConfig {
+                    channel_input: true,
+                    last_channel: None,
+                    selected_channels: vec![],
+                },
+            }
+        })
+}
+
+pub fn save_button_config(config: &ButtonConfig) {
+    let path = button_config_path();
+    let _ = std::fs::create_dir_all(std::path::Path::new(&path).parent().unwrap());
+    let _ = std::fs::write(path, serde_json::to_vec_pretty(config).unwrap());
+}
+
+pub fn load_macros() -> Vec<Macro> {
+    let path = macros_path();
+    std::fs::read(&path)
+        .ok()
+        .and_then(|b| serde_json::from_slice(&b).ok())
+        .unwrap_or_default()
+}
+
+pub fn save_macros(macros: &[Macro]) {
+    let path = macros_path();
+    let _ = std::fs::create_dir_all(std::path::Path::new(&path).parent().unwrap());
+    let _ = std::fs::write(path, serde_json::to_vec_pretty(macros).unwrap());
+}
+
 
