@@ -77,6 +77,47 @@ pub struct User { pub username: String, pub hash: String, pub role: String }
 #[derive(Debug, Serialize, Deserialize, Clone, Default)]
 pub struct Profile { pub theme: Option<String>, pub layout: Option<String>, pub favorites: Option<Vec<String>> }
 
+// ---------------- Q List Types ----------------
+#[derive(Debug, Serialize, Deserialize, Clone, Default)]
+pub struct QListTiming { pub fade_in: u64, pub fade_out: u64, pub delay: u64, pub follow: u64 }
+
+#[derive(Debug, Serialize, Deserialize, Clone, Default)]
+pub struct QListCueState { pub is_active: bool, pub is_executed: bool, pub execution_time: Option<u64>, pub progress: u8 }
+
+#[derive(Debug, Serialize, Deserialize, Clone, Default)]
+pub struct QListCue {
+    pub id: String,
+    pub number: u32,
+    pub label: String,
+    pub description: String,
+    pub levels: Vec<u8>, // 512
+    pub timing: QListTiming,
+    pub state: QListCueState,
+    pub metadata: Option<serde_json::Value>,
+    pub created_at: String,
+    pub updated_at: String,
+}
+
+#[derive(Debug, Serialize, Deserialize, Clone, Default)]
+pub struct QListStateDoc {
+    pub name: String,
+    pub cues: Vec<QListCue>,
+    pub current_cue_index: i32,
+    pub is_playing: bool,
+    pub is_paused: bool,
+    pub last_saved: Option<String>,
+}
+
+#[derive(Debug, Serialize, Deserialize, Clone, Default)]
+pub struct QListStateChange {
+    pub id: String,
+    pub r#type: String,
+    pub data: serde_json::Value,
+    pub timestamp: u64,
+    pub user_id: String,
+    pub session_id: String,
+}
+
 // Fader and Control Types
 #[derive(Debug, Serialize, Deserialize, Clone, Default)]
 pub struct FaderBank {

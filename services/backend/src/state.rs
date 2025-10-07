@@ -69,6 +69,33 @@ pub fn save_profile(username: &str, p: &Profile) {
     let path = profiles_path(username); let _ = std::fs::create_dir_all(std::path::Path::new(&path).parent().unwrap()); let _ = std::fs::write(path, serde_json::to_vec_pretty(p).unwrap());
 }
 
+// ---------------- Q List persistence ----------------
+fn qlist_state_path() -> String {
+    let state_dir = std::env::var("IONXE_STATE_DIR").unwrap_or_else(|_| "build/state".into());
+    format!("{}/qlist_state.json", state_dir)
+}
+
+fn qlist_changes_path() -> String {
+    let state_dir = std::env::var("IONXE_STATE_DIR").unwrap_or_else(|_| "build/state".into());
+    format!("{}/qlist_changes.json", state_dir)
+}
+
+pub fn load_qlist_state() -> QListStateDoc {
+    let p = qlist_state_path();
+    std::fs::read(&p).ok().and_then(|b| serde_json::from_slice(&b).ok()).unwrap_or_else(|| QListStateDoc { name: "Untitled Cue List".into(), cues: vec![], current_cue_index: -1, is_playing: false, is_paused: false, last_saved: None })
+}
+
+pub fn save_qlist_state(doc: &QListStateDoc) {
+    let p = qlist_state_path(); let _ = std::fs::create_dir_all(std::path::Path::new(&p).parent().unwrap()); let _ = std::fs::write(p, serde_json::to_vec_pretty(doc).unwrap());
+}
+
+pub fn append_qlist_changes(changes: &[QListStateChange]) {
+    let p = qlist_changes_path();
+    let mut existing: Vec<QListStateChange> = std::fs::read(&p).ok().and_then(|b| serde_json::from_slice(&b).ok()).unwrap_or_default();
+    existing.extend_from_slice(changes);
+    let _ = std::fs::create_dir_all(std::path::Path::new(&p).parent().unwrap()); let _ = std::fs::write(p, serde_json::to_vec_pretty(&existing).unwrap());
+}
+
 // Fader and Control persistence
 fn fader_config_path() -> String {
     let state_dir = std::env::var("IONXE_STATE_DIR").unwrap_or_else(|_| "build/state".into());

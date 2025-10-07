@@ -24,6 +24,7 @@
       <a href="#cmd" id="tab-cmd" class="tab">Command Center</a>
       <a href="#files" id="tab-files" class="tab">Files</a>
       <a href="#color" id="tab-color" class="tab">Color</a>
+      <a href="#qlist" id="tab-qlist" class="tab">Q List</a>
       <a href="#auth" id="tab-auth" class="tab">Auth</a>
     </div>
     <div id="view-console" class="view active">
@@ -121,6 +122,29 @@
         <button id="intens-apply">Apply Intensity</button>
       </div>
     </div>
+    <div id="view-qlist" class="view">
+      <div class="row">
+        <input id="qlist-name" placeholder="Cue List Name"/>
+        <button id="qlist-new-cue">New Cue</button>
+        <button id="qlist-duplicate-cue">Duplicate</button>
+        <button id="qlist-delete-cue">Delete</button>
+        <button id="qlist-export">Export</button>
+        <input id="qlist-import-file" type="file" accept="application/json" style="display:none"/>
+        <button id="qlist-import">Import</button>
+      </div>
+      <div class="row">
+        <button id="qlist-prev">Prev</button>
+        <button id="qlist-go">Go</button>
+        <button id="qlist-next">Next</button>
+        <span id="qlist-status" class="status"></span>
+      </div>
+      <table id="qlist-table">
+        <thead>
+          <tr><th>#</th><th>Label</th><th>Description</th><th>Fade In</th><th>Fade Out</th><th>Delay</th><th>Follow</th><th>Progress</th></tr>
+        </thead>
+        <tbody></tbody>
+      </table>
+    </div>
     <div id="view-auth" class="view">
       <div class="row">
         <input id="auth-username" placeholder="Username"/>
@@ -163,6 +187,11 @@
     <script src="js/auth.js"></script>
     <script src="js/magic.js"></script>
     <script src="js/console.js"></script>
+    <script src="js/qlist-core.js"></script>
+    <script src="js/qlist-labels.js"></script>
+    <script src="js/qlist-state.js"></script>
+    <script src="js/qlist-timing.js"></script>
+    <script src="js/qlist-ui.js"></script>
   </body>
   </html>
 

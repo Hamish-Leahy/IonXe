@@ -27,6 +27,9 @@ pub fn build_router() -> Router {
         .route("/api/v1/fs/write", put(fs_write))
         .route("/api/v1/fs/delete", delete(fs_delete))
         .route("/api/v1/fs/mkdir", post(fs_mkdir))
+        // Q List state endpoints
+        .route("/api/v1/qlist/state", get(qlist_state_get).put(qlist_state_put).post(qlist_state_post))
+        .route("/api/v1/qlist/state/batch", post(qlist_state_batch))
         // Fader and control endpoints
         .route("/api/v1/controls/faders", get(get_fader_banks).put(put_fader_banks))
         .route("/api/v1/controls/buttons", get(get_button_config).put(put_button_config))
@@ -215,6 +218,15 @@ pub async fn fs_mkdir(Query(q): Query<FsQuery>) -> impl axum::response::IntoResp
     let Some(path) = sanitize_path(&q.path) else { return axum::http::StatusCode::BAD_REQUEST; };
     match fs::create_dir_all(&path) { Ok(_) => axum::http::StatusCode::NO_CONTENT, Err(_) => axum::http::StatusCode::INTERNAL_SERVER_ERROR }
 }
+
+// ---------------- Q List Handlers ----------------
+pub async fn qlist_state_get() -> Json<QListStateDoc> { Json(load_qlist_state()) }
+pub async fn qlist_state_put(Json(doc): Json<QListStateDoc>) -> axum::http::StatusCode { save_qlist_state(&doc); axum::http::StatusCode::NO_CONTENT }
+pub async fn qlist_state_post(Json(change): Json<QListStateChange>) -> axum::http::StatusCode { append_qlist_changes(&[change]); axum::http::StatusCode::NO_CONTENT }
+
+#[derive(serde::Deserialize)]
+pub struct QListBatch { changes: Vec<QListStateChange> }
+pub async fn qlist_state_batch(Json(batch): Json<QListBatch>) -> axum::http::StatusCode { append_qlist_changes(&batch.changes); axum::http::StatusCode::NO_CONTENT }
 
 // Fader and Control Endpoints
 pub async fn get_fader_banks() -> Json<FaderConfig> {
