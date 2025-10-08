@@ -7,12 +7,14 @@
 
   function renderTable() {
     tableBody.innerHTML = '';
-    qListManager.cues.forEach((cue) => {
+    qListManager.cues.forEach((cue, index) => {
       const tr = document.createElement('tr');
       if (cue.state.isActive) tr.classList.add('active');
+      if (index === qListManager.currentCueIndex) tr.classList.add('current');
       tr.dataset.id = cue.id;
+      tr.draggable = true;
       tr.innerHTML = `
-        <td>${cue.number}</td>
+        <td class="cue-number">${cue.number}</td>
         <td contenteditable="true" data-field="label">${cue.label}</td>
         <td contenteditable="true" data-field="description">${cue.description}</td>
         <td contenteditable="true" data-field="fadeIn">${cue.timing.fadeIn}</td>
