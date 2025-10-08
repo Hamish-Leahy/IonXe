@@ -113,6 +113,182 @@
     return tr ? tr.dataset.id : null;
   }
 
+  // Drag and Drop functionality
+  let draggedElement = null;
+  let dropIndicator = null;
+
+  tableBody.addEventListener('dragstart', (e) => {
+    draggedElement = e.target.closest('tr');
+    e.dataTransfer.effectAllowed = 'move';
+    e.dataTransfer.setData('text/html', draggedElement.outerHTML);
+    draggedElement.classList.add('dragging');
+  });
+
+  tableBody.addEventListener('dragend', (e) => {
+    if (draggedElement) {
+      draggedElement.classList.remove('dragging');
+      draggedElement = null;
+    }
+    if (dropIndicator) {
+      dropIndicator.remove();
+      dropIndicator = null;
+    }
+  });
+
+  tableBody.addEventListener('dragover', (e) => {
+    e.preventDefault();
+    e.dataTransfer.dropEffect = 'move';
+    
+    const afterElement = getDragAfterElement(tableBody, e.clientY);
+    if (dropIndicator) {
+      dropIndicator.remove();
+    }
+    
+    dropIndicator = document.createElement('div');
+    dropIndicator.className = 'drop-indicator';
+    dropIndicator.style.height = '2px';
+    dropIndicator.style.background = '#2e7dd7';
+    dropIndicator.style.margin = '0';
+    
+    if (afterElement == null) {
+      tableBody.appendChild(dropIndicator);
+    } else {
+      tableBody.insertBefore(dropIndicator, afterElement);
+    }
+  });
+
+  tableBody.addEventListener('drop', (e) => {
+    e.preventDefault();
+    if (!draggedElement) return;
+    
+    const afterElement = getDragAfterElement(tableBody, e.clientY);
+    const draggedId = draggedElement.dataset.id;
+    const afterId = afterElement ? afterElement.dataset.id : null;
+    
+    // Reorder cues
+    reorderCues(draggedId, afterId);
+    
+    if (dropIndicator) {
+      dropIndicator.remove();
+      dropIndicator = null;
+    }
+  });
+
+  function getDragAfterElement(container, y) {
+    const draggableElements = [...container.querySelectorAll('tr:not(.dragging)')];
+    
+    return draggableElements.reduce((closest, child) => {
+      const box = child.getBoundingClientRect();
+      const offset = y - box.top - box.height / 2;
+      
+      if (offset < 0 && offset > closest.offset) {
+        return { offset: offset, element: child };
+      } else {
+        return closest;
+      }
+    }, { offset: Number.NEGATIVE_INFINITY }).element;
+  }
+
+  function reorderCues(draggedId, afterId) {
+    const draggedIndex = qListManager.cues.findIndex(c => c.id === draggedId);
+    const afterIndex = afterId ? qListManager.cues.findIndex(c => c.id === afterId) : -1;
+    
+    if (draggedIndex === -1) return;
+    
+    const [draggedCue] = qListManager.cues.splice(draggedIndex, 1);
+    
+    if (afterIndex === -1) {
+      qListManager.cues.push(draggedCue);
+    } else {
+      const insertIndex = afterIndex > draggedIndex ? afterIndex - 1 : afterIndex;
+      qListManager.cues.splice(insertIndex, 0, draggedCue);
+    }
+    
+    // Update cue numbers
+    qListManager.cues.forEach((cue, index) => {
+      cue.number = index + 1;
+    });
+    
+    // Update current cue index
+    if (qListManager.currentCueIndex === draggedIndex) {
+      qListManager.currentCueIndex = afterIndex === -1 ? qListManager.cues.length - 1 : 
+        (afterIndex > draggedIndex ? afterIndex - 1 : afterIndex);
+    } else if (qListManager.currentCueIndex > draggedIndex && qListManager.currentCueIndex <= afterIndex) {
+      qListManager.currentCueIndex--;
+    } else if (qListManager.currentCueIndex < draggedIndex && qListManager.currentCueIndex >= afterIndex) {
+      qListManager.currentCueIndex++;
+    }
+    
+    renderTable();
+    qListManager.notifyCueListUpdated();
+    qListStateManager.saveStateToServer();
+    setStatus('Cues reordered');
+  }
+
+  // Keyboard shortcuts
+  document.addEventListener('keydown', (e) => {
+    // Only handle shortcuts when Q List tab is active
+    if (!document.getElementById('view-qlist').classList.contains('active')) return;
+    
+    switch (e.key) {
+      case 'ArrowUp':
+        if (e.ctrlKey) {
+          e.preventDefault();
+          qListManager.previousCue();
+          setStatus('Previous cue');
+        }
+        break;
+      case 'ArrowDown':
+        if (e.ctrlKey) {
+          e.preventDefault();
+          qListManager.nextCue();
+          setStatus('Next cue');
+        }
+        break;
+      case ' ':
+        e.preventDefault();
+        if (qListManager.isPlaying) {
+          qListManager.pause();
+          setStatus('Paused');
+        } else {
+          qListManager.play();
+          setStatus('Playing');
+        }
+        break;
+      case 'Enter':
+        if (e.ctrlKey) {
+          e.preventDefault();
+          const cue = qListManager.getCurrentCue() || qListManager.cues[0];
+          if (cue) {
+            qListTimingManager.executeCueWithTiming(cue);
+            setStatus(`Executing cue ${cue.number}`);
+          }
+        }
+        break;
+      case 'n':
+        if (e.ctrlKey) {
+          e.preventDefault();
+          const cue = qListManager.addCue({ label: 'New Cue', description: '', levels: new Uint8Array(faderValues) });
+          renderTable();
+          qListStateManager.saveStateToServer();
+          setStatus(`Added cue ${cue.number}`);
+        }
+        break;
+      case 'Delete':
+        if (e.ctrlKey) {
+          e.preventDefault();
+          const sel = getSelectedCueId();
+          if (sel) {
+            qListManager.deleteCue(sel);
+            renderTable();
+            qListStateManager.saveStateToServer();
+            setStatus('Deleted cue');
+          }
+        }
+        break;
+    }
+  });
+
   // React to state changes
   qListManager.onCueChanged = () => renderTable();
   qListManager.onCueListUpdated = () => renderTable();
