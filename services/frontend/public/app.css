@@ -185,4 +185,146 @@ tbody tr:hover { background: #18202b; }
   height: 36px;
 }
 
+/* Q List Styles */
+#qlist-table {
+  width: 100%;
+  border-collapse: collapse;
+  background: var(--panel);
+  border-radius: 8px;
+  overflow: hidden;
+  margin-top: 1rem;
+}
+
+#qlist-table th {
+  background: #223041;
+  color: var(--muted);
+  text-transform: uppercase;
+  font-size: 12px;
+  letter-spacing: .5px;
+  padding: 8px 10px;
+  text-align: left;
+  position: sticky;
+  top: 0;
+  z-index: 10;
+}
+
+#qlist-table td {
+  padding: 8px 10px;
+  border-bottom: 1px solid #1b2a3a;
+  vertical-align: middle;
+}
+
+#qlist-table tr {
+  transition: all 0.2s ease;
+  cursor: pointer;
+}
+
+#qlist-table tr:hover {
+  background: #18202b;
+}
+
+#qlist-table tr.selected {
+  background: var(--accent);
+  color: white;
+}
+
+#qlist-table tr.selected td {
+  color: white;
+}
+
+#qlist-table tr.current {
+  background: #2e7dd7;
+  color: white;
+}
+
+#qlist-table tr.current td {
+  color: white;
+  font-weight: bold;
+}
+
+#qlist-table tr.active {
+  background: #22b07d;
+  color: white;
+}
+
+#qlist-table tr.active td {
+  color: white;
+}
+
+#qlist-table tr.dragging {
+  opacity: 0.5;
+  transform: rotate(2deg);
+}
+
+#qlist-table .cue-number {
+  font-weight: bold;
+  text-align: center;
+  width: 60px;
+  background: #1b2a3a;
+}
+
+#qlist-table [contenteditable="true"] {
+  background: transparent;
+  border: 1px solid transparent;
+  padding: 2px 4px;
+  border-radius: 3px;
+  transition: all 0.2s ease;
+}
+
+#qlist-table [contenteditable="true"]:focus {
+  background: #0e151d;
+  border-color: var(--accent);
+  outline: none;
+}
+
+#qlist-table progress {
+  width: 100%;
+  height: 8px;
+  border-radius: 4px;
+  background: #1b2a3a;
+}
+
+#qlist-table progress::-webkit-progress-bar {
+  background: #1b2a3a;
+  border-radius: 4px;
+}
+
+#qlist-table progress::-webkit-progress-value {
+  background: var(--accent);
+  border-radius: 4px;
+}
+
+.drop-indicator {
+  height: 2px;
+  background: var(--accent);
+  margin: 0;
+  border-radius: 1px;
+  box-shadow: 0 0 4px var(--accent);
+}
+
+/* Q List Controls */
+#view-qlist .row {
+  margin-bottom: 1rem;
+  gap: 8px;
+  align-items: center;
+}
+
+#view-qlist button {
+  padding: 8px 16px;
+  font-weight: 500;
+}
+
+#qlist-status {
+  color: var(--muted);
+  font-size: 14px;
+  margin-left: auto;
+}
+
+/* Keyboard shortcut hints */
+.keyboard-hint {
+  font-size: 11px;
+  color: var(--muted);
+  margin-left: 4px;
+}
+
 
