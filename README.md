@@ -118,9 +118,11 @@ An open-source, from-scratch lighting control system inspired by the Eos IonXE c
 - **Middleware** - Request routing, rate limiting, and protocol translation
 
 ### **Frontend**
-- **Modular JavaScript** - Clean, maintainable frontend architecture
+- **Modular JavaScript** - Clean, maintainable frontend architecture with 20+ specialized modules
 - **Responsive Design** - Works on desktop and tablet devices
 - **Real-time Updates** - Live synchronization across all controls
+- **Professional UI** - Industry-standard lighting console interface
+- **Keyboard Shortcuts** - Professional workflow shortcuts and hotkeys
 
 ### **Hardware Support**
 - **x86-64** - Primary target architecture
@@ -205,6 +207,8 @@ ionxe/
 - Architectural lighting systems
 - Event and venue management
 - Studio and broadcast lighting
+- Live event production
+- Corporate events and conferences
 
 ### **Education & Training**
 - Lighting design education
