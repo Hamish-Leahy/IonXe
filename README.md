@@ -221,6 +221,8 @@ ionxe/
 - IoT lighting control
 - Custom control solutions
 - API-driven lighting applications
+- Multi-user environments
+- Enterprise lighting management
 
 ## 🤝 **Contributing**
 
