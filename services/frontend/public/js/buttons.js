@@ -1,181 +1,376 @@
 // Button controls and virtual desk functionality
-function setupButtonControls() {
-  // Number keypad
-  const keypadButtons = document.querySelectorAll('.num-keypad button');
-  keypadButtons.forEach(btn => {
-    btn.addEventListener('click', () => {
-      const value = btn.textContent;
-      if (value === '+') {
-        // Channel up
-        if (buttonStates.lastSelectedChannel !== null) {
-          buttonStates.lastSelectedChannel = Math.min(511, buttonStates.lastSelectedChannel + 1);
-          updateSelectedChannel();
-        }
-      } else if (value === '-') {
-        // Channel down
-        if (buttonStates.lastSelectedChannel !== null) {
-          buttonStates.lastSelectedChannel = Math.max(0, buttonStates.lastSelectedChannel - 1);
-          updateSelectedChannel();
-        }
-      } else {
-        // Number input
-        const num = parseInt(value);
-        if (!isNaN(num)) {
-          if (buttonStates.lastSelectedChannel === null) {
-            buttonStates.lastSelectedChannel = num - 1;
-          } else {
-            buttonStates.lastSelectedChannel = buttonStates.lastSelectedChannel * 10 + num;
-            if (buttonStates.lastSelectedChannel > 511) {
-              buttonStates.lastSelectedChannel = num - 1;
-            }
-          }
-          updateSelectedChannel();
-        }
-      }
+class IonXeButtons {
+  constructor(core) {
+    this.core = core;
+    this.state = core.state;
+    this.initialize();
+  }
+
+  initialize() {
+    this.setupEventListeners();
+    this.setupChannelSelection();
+  }
+
+  setupEventListeners() {
+    // Number keypad
+    const keypadButtons = document.querySelectorAll('.num-keypad button');
+    keypadButtons.forEach(btn => {
+      btn.addEventListener('click', () => {
+        const value = btn.textContent;
+        this.handleKeypadInput(value);
+      });
     });
-  });
 
-  // Intensity controls
-  document.getElementById('intensity-full').onclick = () => {
-    if (buttonStates.selectedChannels.size > 0) {
-      const channels = Array.from(buttonStates.selectedChannels);
-      setChannelsIntensity(channels, 255);
+    // Intensity controls
+    const intensityFullBtn = document.getElementById('intensity-full');
+    const intensityOutBtn = document.getElementById('intensity-out');
+    const intensityAtBtn = document.getElementById('intensity-at');
+
+    if (intensityFullBtn) {
+      intensityFullBtn.addEventListener('click', () => {
+        this.setSelectedChannelsIntensity(255);
+      });
     }
-  };
 
-  document.getElementById('intensity-out').onclick = () => {
-    if (buttonStates.selectedChannels.size > 0) {
-      const channels = Array.from(buttonStates.selectedChannels);
-      setChannelsIntensity(channels, 0);
+    if (intensityOutBtn) {
+      intensityOutBtn.addEventListener('click', () => {
+        this.setSelectedChannelsIntensity(0);
+      });
     }
-  };
 
-  document.getElementById('intensity-at').onclick = () => {
+    if (intensityAtBtn) {
+      intensityAtBtn.addEventListener('click', () => {
+        this.promptIntensityValue();
+      });
+    }
+
+    // Softkeys
+    this.setupSoftkeys();
+  }
+
+  setupSoftkeys() {
+    const softkeyMacro = document.getElementById('softkey-macro');
+    const softkeyRecord = document.getElementById('softkey-record');
+    const softkeyUpdate = document.getElementById('softkey-update');
+    const softkeyClear = document.getElementById('softkey-clear');
+    const softkeyBlind = document.getElementById('softkey-blind');
+    const softkeyLive = document.getElementById('softkey-live');
+
+    if (softkeyMacro) {
+      softkeyMacro.addEventListener('click', () => {
+        this.toggleMacroMode();
+      });
+    }
+
+    if (softkeyRecord) {
+      softkeyRecord.addEventListener('click', () => {
+        this.toggleRecordMode();
+      });
+    }
+
+    if (softkeyUpdate) {
+      softkeyUpdate.addEventListener('click', () => {
+        this.updateSelectedChannels();
+      });
+    }
+
+    if (softkeyClear) {
+      softkeyClear.addEventListener('click', () => {
+        this.setSelectedChannelsIntensity(0);
+      });
+    }
+
+    if (softkeyBlind) {
+      softkeyBlind.addEventListener('click', () => {
+        this.toggleBlindMode();
+      });
+    }
+
+    if (softkeyLive) {
+      softkeyLive.addEventListener('click', () => {
+        this.toggleLiveMode();
+      });
+    }
+  }
+
+  handleKeypadInput(value) {
+    if (value === '+') {
+      // Channel up
+      if (this.state.buttonStates.lastSelectedChannel !== null) {
+        this.state.buttonStates.lastSelectedChannel = Math.min(511, this.state.buttonStates.lastSelectedChannel + 1);
+        this.updateSelectedChannelDisplay();
+      }
+    } else if (value === '-') {
+      // Channel down
+      if (this.state.buttonStates.lastSelectedChannel !== null) {
+        this.state.buttonStates.lastSelectedChannel = Math.max(0, this.state.buttonStates.lastSelectedChannel - 1);
+        this.updateSelectedChannelDisplay();
+      }
+    } else {
+      // Number input
+      const num = parseInt(value);
+      if (!isNaN(num)) {
+        if (this.state.buttonStates.lastSelectedChannel === null) {
+          this.state.buttonStates.lastSelectedChannel = num - 1;
+        } else {
+          this.state.buttonStates.lastSelectedChannel = this.state.buttonStates.lastSelectedChannel * 10 + num;
+          if (this.state.buttonStates.lastSelectedChannel > 511) {
+            this.state.buttonStates.lastSelectedChannel = num - 1;
+          }
+        }
+        this.updateSelectedChannelDisplay();
+      }
+    }
+  }
+
+  setSelectedChannelsIntensity(value) {
+    if (this.state.buttonStates.selectedChannels.size > 0) {
+      const channels = Array.from(this.state.buttonStates.selectedChannels);
+      this.setChannelsIntensity(channels, value);
+    }
+  }
+
+  setChannelsIntensity(channels, value) {
+    for (const ch of channels) {
+      if (ch >= 0 && ch < 512) {
+        const gmValue = this.state.applyGrandMaster(value);
+        this.state.updateFaderValue(ch, gmValue);
+      }
+    }
+    this.scheduleFlush();
+  }
+
+  promptIntensityValue() {
     const value = prompt('Enter intensity value (0-255):');
     const intValue = parseInt(value);
     if (!isNaN(intValue) && intValue >= 0 && intValue <= 255) {
-      if (buttonStates.selectedChannels.size > 0) {
-        const channels = Array.from(buttonStates.selectedChannels);
-        setChannelsIntensity(channels, intValue);
-      }
+      this.setSelectedChannelsIntensity(intValue);
     }
-  };
+  }
 
-  // Softkeys
-  document.getElementById('softkey-macro').onclick = () => {
-    buttonStates.macroMode = !buttonStates.macroMode;
-    updateButtonStates();
-    if (buttonStates.macroMode) {
-      showMacroPanel();
-    } else {
-      hideMacroPanel();
-    }
-  };
+  toggleMacroMode() {
+    this.state.buttonStates.macroMode = !this.state.buttonStates.macroMode;
+    this.updateButtonStates();
+    
+    // Emit event for macro system
+    this.core.emit('macroModeToggled', { enabled: this.state.buttonStates.macroMode });
+  }
 
-  document.getElementById('softkey-record').onclick = () => {
-    if (macroRecording) {
-      stopMacroRecording();
-    } else {
-      startMacroRecording();
-    }
-    updateButtonStates();
-  };
+  toggleRecordMode() {
+    this.state.buttonStates.recordMode = !this.state.buttonStates.recordMode;
+    this.updateButtonStates();
+    
+    // Emit event for macro system
+    this.core.emit('recordModeToggled', { enabled: this.state.buttonStates.recordMode });
+  }
 
-  document.getElementById('softkey-update').onclick = () => {
-    // Update selected channels with current levels
-    if (buttonStates.selectedChannels.size > 0) {
-      const channels = Array.from(buttonStates.selectedChannels);
+  updateSelectedChannels() {
+    if (this.state.buttonStates.selectedChannels.size > 0) {
+      const channels = Array.from(this.state.buttonStates.selectedChannels);
       for (const ch of channels) {
-        faderValues[ch] = applyGrandMaster(faderValues[ch]);
+        const currentValue = this.state.getFaderValue(ch);
+        const gmValue = this.state.applyGrandMaster(currentValue);
+        this.state.updateFaderValue(ch, gmValue);
       }
-      scheduleFlush();
-    }
-  };
-
-  document.getElementById('softkey-clear').onclick = () => {
-    if (buttonStates.selectedChannels.size > 0) {
-      const channels = Array.from(buttonStates.selectedChannels);
-      setChannelsIntensity(channels, 0);
-    }
-  };
-
-  document.getElementById('softkey-blind').onclick = () => {
-    buttonStates.blindMode = !buttonStates.blindMode;
-    buttonStates.liveMode = !buttonStates.blindMode;
-    updateButtonStates();
-  };
-
-  document.getElementById('softkey-live').onclick = () => {
-    buttonStates.liveMode = !buttonStates.liveMode;
-    buttonStates.blindMode = !buttonStates.liveMode;
-    updateButtonStates();
-  };
-}
-
-function updateSelectedChannel() {
-  const display = document.getElementById('selected-channel');
-  if (display) {
-    display.textContent = buttonStates.lastSelectedChannel !== null ? 
-      `Ch ${buttonStates.lastSelectedChannel + 1}` : 'No Selection';
-  }
-}
-
-function updateButtonStates() {
-  // Update button visual states
-  document.getElementById('softkey-macro').classList.toggle('active', buttonStates.macroMode);
-  document.getElementById('softkey-record').classList.toggle('active', buttonStates.recordMode);
-  document.getElementById('softkey-blind').classList.toggle('active', buttonStates.blindMode);
-  document.getElementById('softkey-live').classList.toggle('active', buttonStates.liveMode);
-}
-
-function setChannelsIntensity(channels, value) {
-  for (const ch of channels) {
-    if (ch >= 0 && ch < 512) {
-      faderValues[ch] = applyGrandMaster(value);
+      this.scheduleFlush();
     }
   }
-  scheduleFlush();
-}
 
-// Channel selection functionality
-function addChannelSelection() {
-  // Add click handlers to fader labels for channel selection
-  document.addEventListener('click', (e) => {
-    if (e.target.tagName === 'LABEL' && e.target.parentElement.classList.contains('fader')) {
-      const labelText = e.target.textContent;
-      const channelNum = parseInt(labelText) - 1;
-      if (!isNaN(channelNum) && channelNum >= 0 && channelNum < 512) {
-        if (e.ctrlKey || e.metaKey) {
-          // Multi-select
-          if (buttonStates.selectedChannels.has(channelNum)) {
-            buttonStates.selectedChannels.delete(channelNum);
-          } else {
-            buttonStates.selectedChannels.add(channelNum);
-          }
-        } else {
-          // Single select
-          buttonStates.selectedChannels.clear();
-          buttonStates.selectedChannels.add(channelNum);
+  toggleBlindMode() {
+    this.state.buttonStates.blindMode = !this.state.buttonStates.blindMode;
+    this.state.buttonStates.liveMode = !this.state.buttonStates.blindMode;
+    this.updateButtonStates();
+    
+    this.core.emit('modeChanged', { 
+      blind: this.state.buttonStates.blindMode, 
+      live: this.state.buttonStates.liveMode 
+    });
+  }
+
+  toggleLiveMode() {
+    this.state.buttonStates.liveMode = !this.state.buttonStates.liveMode;
+    this.state.buttonStates.blindMode = !this.state.buttonStates.liveMode;
+    this.updateButtonStates();
+    
+    this.core.emit('modeChanged', { 
+      blind: this.state.buttonStates.blindMode, 
+      live: this.state.buttonStates.liveMode 
+    });
+  }
+
+  updateSelectedChannelDisplay() {
+    const display = document.getElementById('selected-channel');
+    if (display) {
+      display.textContent = this.state.buttonStates.lastSelectedChannel !== null ? 
+        `Ch ${this.state.buttonStates.lastSelectedChannel + 1}` : 'No Selection';
+    }
+  }
+
+  updateButtonStates() {
+    // Update button visual states
+    const softkeyMacro = document.getElementById('softkey-macro');
+    const softkeyRecord = document.getElementById('softkey-record');
+    const softkeyBlind = document.getElementById('softkey-blind');
+    const softkeyLive = document.getElementById('softkey-live');
+
+    if (softkeyMacro) {
+      softkeyMacro.classList.toggle('active', this.state.buttonStates.macroMode);
+    }
+    if (softkeyRecord) {
+      softkeyRecord.classList.toggle('active', this.state.buttonStates.recordMode);
+    }
+    if (softkeyBlind) {
+      softkeyBlind.classList.toggle('active', this.state.buttonStates.blindMode);
+    }
+    if (softkeyLive) {
+      softkeyLive.classList.toggle('active', this.state.buttonStates.liveMode);
+    }
+  }
+
+  setupChannelSelection() {
+    // Add click handlers to fader labels for channel selection
+    document.addEventListener('click', (e) => {
+      if (e.target.tagName === 'LABEL' && e.target.parentElement.classList.contains('fader')) {
+        const labelText = e.target.textContent;
+        const channelNum = parseInt(labelText) - 1;
+        if (!isNaN(channelNum) && channelNum >= 0 && channelNum < 512) {
+          const multiSelect = e.ctrlKey || e.metaKey;
+          this.state.selectChannel(channelNum, multiSelect);
+          this.updateSelectedChannelDisplay();
+          this.updateChannelSelectionUI();
         }
-        buttonStates.lastSelectedChannel = channelNum;
-        updateSelectedChannel();
-        updateChannelSelectionUI();
       }
-    }
-  });
+    });
+  }
+
+  updateChannelSelectionUI() {
+    // Update visual indication of selected channels
+    document.querySelectorAll('.fader').forEach(fader => {
+      const label = fader.querySelector('label');
+      if (label) {
+        const channelNum = parseInt(label.textContent) - 1;
+        fader.classList.toggle('selected', this.state.buttonStates.selectedChannels.has(channelNum));
+      }
+    });
+  }
+
+  scheduleFlush() {
+    if (this.state.flushPending) return;
+    
+    this.state.flushPending = true;
+    setTimeout(async () => {
+      try {
+        await this.core.apiFetch('/api/v1/dimmers/levels', { 
+          method: 'PUT', 
+          body: this.state.faderValues 
+        });
+      } catch (error) {
+        console.warn('Levels flush error:', error);
+      }
+      this.state.flushPending = false;
+    }, 50); // throttle 20 Hz
+  }
 }
 
-function updateChannelSelectionUI() {
-  // Update visual indication of selected channels
-  document.querySelectorAll('.fader').forEach(fader => {
-    const label = fader.querySelector('label');
-    if (label) {
-      const channelNum = parseInt(label.textContent) - 1;
-      fader.classList.toggle('selected', buttonStates.selectedChannels.has(channelNum));
+// Legacy compatibility functions for existing code
+function parseList(input) {
+  const s = (input||'').trim();
+  if (!s) return [];
+  const parts = s.split(',');
+  const out = [];
+  for (const p of parts) {
+    if (p.includes('-')) {
+      const [a,b] = p.split('-').map(x=>parseInt(x,10));
+      if (!isNaN(a) && !isNaN(b)) { for (let i=a;i<=b;i++) out.push(i); }
+    } else {
+      const n = parseInt(p,10); if (!isNaN(n)) out.push(n);
     }
-  });
+  }
+  return out;
 }
 
-// Initialize button controls
-setupButtonControls();
-addChannelSelection();
+// Color and Intensity controls (legacy compatibility)
+document.addEventListener('DOMContentLoaded', () => {
+  const colorApplyBtn = document.getElementById('color-apply');
+  const intensApplyBtn = document.getElementById('intens-apply');
+  
+  if (colorApplyBtn) {
+    colorApplyBtn.addEventListener('click', async () => {
+      const hex = document.getElementById('color-picker').value || '#ffffff';
+      const r = parseInt(hex.slice(1,3), 16) & 0xff;
+      const g = parseInt(hex.slice(3,5), 16) & 0xff;
+      const b = parseInt(hex.slice(5,7), 16) & 0xff;
+      const bases = parseList(document.getElementById('color-bases').value).map(x=>Math.max(0, x-1));
+      const payload = { model: 'rgb', rgb: [r,g,b], bases };
+      
+      try {
+        await window.ionxe.core.apiFetch('/api/v1/color', { 
+          method: 'POST', 
+          headers: { 'content-type': 'application/json' }, 
+          body: JSON.stringify(payload) 
+        });
+        window.ionxe.core.showSuccess('Color applied successfully');
+      } catch (error) {
+        window.ionxe.core.showError('Failed to apply color');
+      }
+    });
+  }
+  
+  if (intensApplyBtn) {
+    intensApplyBtn.addEventListener('click', async () => {
+      const chans = parseList(document.getElementById('intens-chans').value).map(x=>Math.max(0, x-1));
+      const value = Math.max(0, Math.min(255, parseInt(document.getElementById('intens-value').value||'0',10)));
+      const payload = { channels: chans, value };
+      
+      try {
+        await window.ionxe.core.apiFetch('/api/v1/intensity', { 
+          method: 'POST', 
+          headers: { 'content-type': 'application/json' }, 
+          body: JSON.stringify(payload) 
+        });
+        window.ionxe.core.showSuccess('Intensity applied successfully');
+      } catch (error) {
+        window.ionxe.core.showError('Failed to apply intensity');
+      }
+    });
+  }
+});
+
+// Auth UI (legacy compatibility)
+document.addEventListener('DOMContentLoaded', () => {
+  const authLoginBtn = document.getElementById('auth-login');
+  
+  if (authLoginBtn) {
+    authLoginBtn.addEventListener('click', async () => {
+      const username = document.getElementById('auth-username').value;
+      const password = document.getElementById('auth-password').value;
+      
+      try {
+        const response = await fetch(window.ionxe.core.base + '/api/v1/auth/login', { 
+          method: 'POST', 
+          headers: { 'content-type': 'application/json' }, 
+          body: JSON.stringify({ username, password }) 
+        });
+        
+        const out = document.getElementById('auth-status');
+        if (response.ok) { 
+          const data = await response.json(); 
+          window.ionxe.core.authToken = data.token; 
+          localStorage.setItem('ionxe_token', data.token); 
+          out.textContent = 'Logged in';
+          window.ionxe.core.showSuccess('Login successful');
+        } else { 
+          out.textContent = 'Login failed';
+          window.ionxe.core.showError('Login failed');
+        }
+      } catch (error) {
+        const out = document.getElementById('auth-status');
+        out.textContent = 'Login error';
+        window.ionxe.core.showError('Login error');
+      }
+    });
+  }
+});
+
+// Register the module
+window.IonXeButtons = IonXeButtons;
