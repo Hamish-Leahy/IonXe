@@ -36,17 +36,71 @@ An open-source, from-scratch lighting control system inspired by the Eos IonXE c
 - **Step-by-step** - Visual macro editor with parameter display
 - **Integration** - Seamless integration with all control features
 
-### 🎨 **Color & Intensity Control**
-- **RGB Color Picker** - Intuitive color selection
+### 🎨 **Advanced Color & Effects System**
+- **RGB/HSL Color Picker** - Professional color selection with multiple color spaces
+- **Color Palettes** - Save, load, and manage color collections
 - **Channel Ranges** - Control multiple channels simultaneously
 - **Intensity Scaling** - Precise level control (0-255)
 - **Real-time Updates** - Instant visual feedback
+- **Color Integration** - Seamless integration with faders, scenes, and Q lists
+
+### 🎭 **Q List & Cue Management**
+- **Professional Q Lists** - Complete cue management system
+- **Cue Labels & Descriptions** - Rich metadata for each cue
+- **Advanced Timing** - Fade in/out, delay, and follow times
+- **State Management** - Real-time cue state tracking and progress
+- **Drag & Drop** - Intuitive cue reordering
+- **Keyboard Shortcuts** - Professional workflow shortcuts
+- **Import/Export** - Q list sharing and backup
+
+### 🎪 **Fixture Management**
+- **Fixture Library** - Comprehensive fixture database
+- **DMX Patching** - Professional patch management
+- **Fixture Groups** - Organize fixtures for easy control
+- **Profile Management** - Custom fixture profiles and capabilities
+- **DMX Mapping** - Flexible channel mapping and control
+- **Fixture Integration** - Seamless integration with all control systems
+
+### 🎵 **Advanced Timing & Audio**
+- **BPM-Based Timing** - Musical timing with note presets
+- **Easing Functions** - Smooth transitions and curves
+- **Audio Integration** - Real-time audio analysis and reactive lighting
+- **Beat Detection** - Automatic BPM detection and synchronization
+- **Frequency Analysis** - Multi-band audio processing
+- **Audio Effects** - Sound-reactive lighting effects
 
 ### 🌐 **Network & Protocol Support**
 - **Art-Net** - Industry-standard lighting protocol
 - **sACN (E1.31)** - Streaming ACN for professional networks
+- **Multi-Universe** - Support for multiple DMX universes
+- **Network Discovery** - Automatic device discovery
 - **RESTful API** - Complete HTTP API for integration
 - **WebSocket Support** - Real-time bidirectional communication
+
+### 📁 **Show Management**
+- **Show File System** - Complete show file management with templates
+- **Auto-Save** - Automatic show saving every 30 seconds
+- **Version Control** - Automatic versioning with checksum validation
+- **Backup & Restore** - Create and restore show backups
+- **Import/Export** - Standard .ionxe show file format
+- **Show History** - Track recently opened shows with metadata
+- **Template System** - Pre-configured show templates for quick setup
+
+### 🔐 **User Management & Security**
+- **Role-Based Access Control** - 4 user roles (Admin, Programmer, Operator, Guest)
+- **Granular Permissions** - 30+ specific permissions for system features
+- **Session Management** - Secure session handling with expiration
+- **User Preferences** - Per-user settings and customization
+- **Password Security** - Secure password hashing and management
+- **JWT Authentication** - Secure token-based authentication
+
+### 📊 **Performance Monitoring**
+- **Real-time Metrics** - CPU, memory, FPS, latency, error rate tracking
+- **Threshold Monitoring** - Configurable alerts for performance issues
+- **System Diagnostics** - Comprehensive system health analysis
+- **Error Tracking** - JavaScript error capture and logging
+- **Performance Optimization** - Automated recommendations for improvement
+- **Alert System** - Real-time alerts with acknowledgment
 
 ### 🔧 **Developer Features**
 - **Modular Architecture** - Clean, maintainable codebase
@@ -55,11 +109,6 @@ An open-source, from-scratch lighting control system inspired by the Eos IonXE c
 - **Command Center** - Shell access for advanced users
 - **Health Monitoring** - System status and diagnostics
 
-### 🔐 **Security & Authentication**
-- **User Management** - Multi-user support with roles
-- **JWT Authentication** - Secure token-based auth
-- **Profile System** - User preferences and settings
-- **Admin Controls** - Lock/unlock and user management
 
 ## 🏗️ **Architecture**
 
