@@ -142,7 +142,13 @@ class IonXeCore {
 
     moduleOrder.forEach(moduleName => {
       try {
-        const className = moduleName.charAt(0).toUpperCase() + moduleName.slice(1);
+        let className;
+        if (moduleName === 'ai-lighting') {
+          className = 'AiLighting';
+        } else {
+          className = moduleName.charAt(0).toUpperCase() + moduleName.slice(1);
+        }
+        
         if (window[`IonXe${className}`]) {
           this.modules.set(moduleName, new window[`IonXe${className}`](this));
         }
