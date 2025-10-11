@@ -1,0 +1,227 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>IonXe AI Lighting Test</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+            background: #1a1a1a;
+            color: #fff;
+        }
+        .test-section {
+            background: #2a2a2a;
+            padding: 20px;
+            margin: 20px 0;
+            border-radius: 8px;
+            border: 1px solid #444;
+        }
+        .test-button {
+            background: #007bff;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 4px;
+            cursor: pointer;
+            margin: 5px;
+        }
+        .test-button:hover {
+            background: #0056b3;
+        }
+        .test-result {
+            background: #1a1a1a;
+            padding: 10px;
+            margin: 10px 0;
+            border-radius: 4px;
+            border-left: 4px solid #007bff;
+        }
+        .error {
+            border-left-color: #F44336;
+            background: #2a1a1a;
+        }
+        .success {
+            border-left-color: #4CAF50;
+            background: #1a2a1a;
+        }
+    </style>
+</head>
+<body>
+    <h1>IonXe AI Lighting System Test</h1>
+    
+    <div class="test-section">
+        <h2>Backend Health Check</h2>
+        <button class="test-button" onclick="testBackendHealth()">Test Backend Health</button>
+        <div id="health-result" class="test-result" style="display: none;"></div>
+    </div>
+
+    <div class="test-section">
+        <h2>Concept Processing Test</h2>
+        <input type="text" id="test-concept" placeholder="Enter a lighting concept..." style="width: 100%; padding: 8px; margin: 10px 0; background: #1a1a1a; border: 1px solid #444; color: #fff; border-radius: 4px;">
+        <button class="test-button" onclick="testConceptProcessing()">Test Concept Processing</button>
+        <div id="concept-result" class="test-result" style="display: none;"></div>
+    </div>
+
+    <div class="test-section">
+        <h2>Scene Generation Test</h2>
+        <button class="test-button" onclick="testSceneGeneration()">Test Scene Generation</button>
+        <div id="scene-result" class="test-result" style="display: none;"></div>
+    </div>
+
+    <div class="test-section">
+        <h2>File Upload Test</h2>
+        <input type="file" id="test-music-file" accept=".wav,.mp3,.mid,.midi" style="width: 100%; padding: 8px; margin: 10px 0; background: #1a1a1a; border: 1px solid #444; color: #fff; border-radius: 4px;">
+        <button class="test-button" onclick="testMusicAnalysis()">Test Music Analysis</button>
+        <div id="music-result" class="test-result" style="display: none;"></div>
+    </div>
+
+    <script>
+        const API_BASE = 'http://localhost:8084/api/v1/ai-lighting';
+
+        async function testBackendHealth() {
+            const resultDiv = document.getElementById('health-result');
+            resultDiv.style.display = 'block';
+            resultDiv.textContent = 'Testing backend health...';
+            resultDiv.className = 'test-result';
+
+            try {
+                const response = await fetch(`${API_BASE}/health`);
+                const data = await response.json();
+                
+                if (response.ok) {
+                    resultDiv.textContent = `✅ Backend is healthy: ${data.service} - ${data.timestamp}`;
+                    resultDiv.className = 'test-result success';
+                } else {
+                    throw new Error(`HTTP ${response.status}: ${data.message || 'Unknown error'}`);
+                }
+            } catch (error) {
+                resultDiv.textContent = `❌ Backend health check failed: ${error.message}`;
+                resultDiv.className = 'test-result error';
+            }
+        }
+
+        async function testConceptProcessing() {
+            const concept = document.getElementById('test-concept').value.trim();
+            const resultDiv = document.getElementById('concept-result');
+            resultDiv.style.display = 'block';
+            resultDiv.textContent = 'Processing concept...';
+            resultDiv.className = 'test-result';
+
+            if (!concept) {
+                resultDiv.textContent = '❌ Please enter a concept';
+                resultDiv.className = 'test-result error';
+                return;
+            }
+
+            try {
+                const response = await fetch(`${API_BASE}/concept/process`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ concept })
+                });
+                
+                const data = await response.json();
+                
+                if (response.ok) {
+                    resultDiv.innerHTML = `✅ Concept processed successfully:<br>
+                        <strong>Mood:</strong> ${data.mood}<br>
+                        <strong>Color Scheme:</strong> ${data.color_scheme}<br>
+                        <strong>Intensity:</strong> ${(data.intensity_level * 100).toFixed(0)}%<br>
+                        <strong>Movement:</strong> ${data.movement_style}`;
+                    resultDiv.className = 'test-result success';
+                } else {
+                    throw new Error(`HTTP ${response.status}: ${data.message || 'Unknown error'}`);
+                }
+            } catch (error) {
+                resultDiv.textContent = `❌ Concept processing failed: ${error.message}`;
+                resultDiv.className = 'test-result error';
+            }
+        }
+
+        async function testSceneGeneration() {
+            const resultDiv = document.getElementById('scene-result');
+            resultDiv.style.display = 'block';
+            resultDiv.textContent = 'Generating scene...';
+            resultDiv.className = 'test-result';
+
+            try {
+                const response = await fetch(`${API_BASE}/scenes/generate`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        concept: "Test lighting scene with warm colors and dynamic movement",
+                        music_context: null,
+                        augment3d_context: null
+                    })
+                });
+                
+                const data = await response.json();
+                
+                if (response.ok) {
+                    resultDiv.innerHTML = `✅ Scene generated successfully:<br>
+                        <strong>Name:</strong> ${data.name}<br>
+                        <strong>Description:</strong> ${data.description}<br>
+                        <strong>Cues:</strong> ${data.lighting_cues.length}<br>
+                        <strong>Tags:</strong> ${data.concept_tags.join(', ')}`;
+                    resultDiv.className = 'test-result success';
+                } else {
+                    throw new Error(`HTTP ${response.status}: ${data.message || 'Unknown error'}`);
+                }
+            } catch (error) {
+                resultDiv.textContent = `❌ Scene generation failed: ${error.message}`;
+                resultDiv.className = 'test-result error';
+            }
+        }
+
+        async function testMusicAnalysis() {
+            const fileInput = document.getElementById('test-music-file');
+            const file = fileInput.files[0];
+            const resultDiv = document.getElementById('music-result');
+            resultDiv.style.display = 'block';
+            resultDiv.textContent = 'Analyzing music...';
+            resultDiv.className = 'test-result';
+
+            if (!file) {
+                resultDiv.textContent = '❌ Please select a music file';
+                resultDiv.className = 'test-result error';
+                return;
+            }
+
+            try {
+                const formData = new FormData();
+                formData.append('file', file);
+
+                const response = await fetch(`${API_BASE}/music/analyze`, {
+                    method: 'POST',
+                    body: formData
+                });
+                
+                const data = await response.json();
+                
+                if (response.ok) {
+                    resultDiv.innerHTML = `✅ Music analyzed successfully:<br>
+                        <strong>Tempo:</strong> ${data.tempo.toFixed(1)} BPM<br>
+                        <strong>Key:</strong> ${data.key}<br>
+                        <strong>Mood:</strong> ${data.mood}<br>
+                        <strong>Dynamics:</strong> ${(data.dynamics * 100).toFixed(0)}%<br>
+                        <strong>Rhythm:</strong> ${data.rhythm_pattern}`;
+                    resultDiv.className = 'test-result success';
+                } else {
+                    throw new Error(`HTTP ${response.status}: ${data.message || 'Unknown error'}`);
+                }
+            } catch (error) {
+                resultDiv.textContent = `❌ Music analysis failed: ${error.message}`;
+                resultDiv.className = 'test-result error';
+            }
+        }
+
+        // Auto-test backend health on page load
+        window.addEventListener('load', () => {
+            testBackendHealth();
+        });
+    </script>
+</body>
+</html>
