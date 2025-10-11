@@ -5,6 +5,7 @@ use axum::{
     routing::{get, post, put, delete},
     Router,
 };
+use futures_util::StreamExt;
 use serde::{Deserialize, Serialize};
 use std::collections::HashMap;
 use std::sync::Arc;
@@ -431,11 +432,36 @@ async fn process_concept(
 
 async fn sync_augment3d(
     State(state): State<Arc<AppState>>,
-    Json(request): Json<SyncAugment3DRequest>,
+    mut multipart: Multipart,
 ) -> Result<Json<Augment3DContext>, StatusCode> {
-    let context = state.augment3d_service.sync_venue_model(&request.venue_model_path)
+    let mut file_data = Vec::new();
+    let mut file_name = String::new();
+    
+    // Extract file from multipart form
+    while let Some(field) = multipart.next_field().await.map_err(|_| StatusCode::BAD_REQUEST)? {
+        if field.name() == Some("file") {
+            file_name = field.file_name().unwrap_or("unknown").to_string();
+            let data = field.bytes().await.map_err(|_| StatusCode::BAD_REQUEST)?;
+            file_data = data.to_vec();
+            break;
+        }
+    }
+    
+    if file_data.is_empty() {
+        return Err(StatusCode::BAD_REQUEST);
+    }
+    
+    // Save uploaded file temporarily
+    let temp_path = format!("/tmp/{}", file_name);
+    tokio::fs::write(&temp_path, &file_data).await.map_err(|_| StatusCode::INTERNAL_SERVER_ERROR)?;
+    
+    // Sync the 3D venue model
+    let context = state.augment3d_service.sync_venue_model(&temp_path)
         .await
         .map_err(|_| StatusCode::INTERNAL_SERVER_ERROR)?;
+
+    // Clean up temporary file
+    let _ = tokio::fs::remove_file(&temp_path).await;
 
     // Update Augment 3D context in state
     {
@@ -480,17 +506,7 @@ struct GenerateSceneRequest {
 }
 
 #[derive(Debug, Deserialize)]
-struct AnalyzeMusicRequest {
-    file_path: String,
-}
-
-#[derive(Debug, Deserialize)]
 struct ProcessConceptRequest {
     concept: String,
     additional_context: Option<String>,
-}
-
-#[derive(Debug, Deserialize)]
-struct SyncAugment3DRequest {
-    venue_model_path: String,
 }
