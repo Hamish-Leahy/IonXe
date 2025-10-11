@@ -1,5 +1,5 @@
 use axum::{
-    extract::{Path, Query, State},
+    extract::{Multipart, Path, Query, State},
     http::StatusCode,
     response::Json,
     routing::{get, post, put, delete},
@@ -372,11 +372,36 @@ async fn generate_scene(
 
 async fn analyze_music(
     State(state): State<Arc<AppState>>,
-    Json(request): Json<AnalyzeMusicRequest>,
+    mut multipart: Multipart,
 ) -> Result<Json<MusicContext>, StatusCode> {
-    let analysis = state.music_analyzer.analyze_music_file(&request.file_path)
+    let mut file_data = Vec::new();
+    let mut file_name = String::new();
+    
+    // Extract file from multipart form
+    while let Some(field) = multipart.next_field().await.map_err(|_| StatusCode::BAD_REQUEST)? {
+        if field.name() == Some("file") {
+            file_name = field.file_name().unwrap_or("unknown").to_string();
+            let data = field.bytes().await.map_err(|_| StatusCode::BAD_REQUEST)?;
+            file_data = data.to_vec();
+            break;
+        }
+    }
+    
+    if file_data.is_empty() {
+        return Err(StatusCode::BAD_REQUEST);
+    }
+    
+    // Save uploaded file temporarily
+    let temp_path = format!("/tmp/{}", file_name);
+    tokio::fs::write(&temp_path, &file_data).await.map_err(|_| StatusCode::INTERNAL_SERVER_ERROR)?;
+    
+    // Analyze the music file
+    let analysis = state.music_analyzer.analyze_music_file(&temp_path)
         .await
         .map_err(|_| StatusCode::INTERNAL_SERVER_ERROR)?;
+
+    // Clean up temporary file
+    let _ = tokio::fs::remove_file(&temp_path).await;
 
     // Update music context in state
     {
