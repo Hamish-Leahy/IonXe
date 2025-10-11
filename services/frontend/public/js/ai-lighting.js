@@ -337,6 +337,11 @@ class IonXeAiLighting {
       return;
     }
 
+    if (concept.length < 10) {
+      this.core.showError('Please provide a more detailed concept (at least 10 characters)');
+      return;
+    }
+
     this.isGenerating = true;
     this.setStatus('Generating scene with Mistral AI...', 'working');
     this.showGenerationProgress();
@@ -362,12 +367,13 @@ class IonXeAiLighting {
         this.setStatus('Scene generated successfully', 'success');
         this.core.showSuccess('AI scene generated successfully');
       } else {
-        throw new Error('Failed to generate scene');
+        const errorData = await response.json().catch(() => ({}));
+        throw new Error(errorData.message || `Server error: ${response.status}`);
       }
     } catch (error) {
       console.error('Scene generation error:', error);
       this.setStatus('Scene generation failed', 'error');
-      this.core.showError('Scene generation failed');
+      this.core.showError(`Scene generation failed: ${error.message}`);
     } finally {
       this.isGenerating = false;
       this.hideGenerationProgress();
@@ -650,6 +656,70 @@ class IonXeAiLighting {
     this.updateGenerateButton();
     this.updateSceneControls();
     this.loadExistingScenes();
+  }
+
+  showLoadingState(section) {
+    const button = document.getElementById(`process-${section}`) || 
+                  document.getElementById(`analyze-${section}`) || 
+                  document.getElementById(`sync-${section}`);
+    
+    if (button) {
+      button.disabled = true;
+      button.innerHTML = `<span class="loading-spinner"></span> Processing...`;
+    }
+  }
+
+  hideLoadingState(section) {
+    const button = document.getElementById(`process-${section}`) || 
+                  document.getElementById(`analyze-${section}`) || 
+                  document.getElementById(`sync-${section}`);
+    
+    if (button) {
+      button.disabled = false;
+      const originalText = section === 'concept' ? 'Process Concept' : 
+                          section === 'music' ? 'Analyze Music' : 
+                          'Sync 3D Venue';
+      button.innerHTML = originalText;
+    }
+  }
+
+  validateConcept(concept) {
+    if (!concept || concept.trim().length < 10) {
+      return 'Please provide a more detailed concept (at least 10 characters)';
+    }
+    if (concept.length > 500) {
+      return 'Concept too long. Please keep it under 500 characters';
+    }
+    return null;
+  }
+
+  validateFile(file, allowedTypes, maxSize) {
+    if (!file) {
+      return 'Please select a file';
+    }
+    
+    if (file.size > maxSize) {
+      return `File too large. Please select a file smaller than ${Math.round(maxSize / (1024 * 1024))}MB`;
+    }
+    
+    const fileExtension = file.name.toLowerCase().substring(file.name.lastIndexOf('.'));
+    if (!allowedTypes.includes(file.type) && !allowedTypes.includes(fileExtension)) {
+      return 'Please select a valid file type';
+    }
+    
+    return null;
+  }
+
+  showRetryOption(operation, retryFunction) {
+    const retryBtn = document.createElement('button');
+    retryBtn.className = 'ai-button';
+    retryBtn.textContent = 'Retry';
+    retryBtn.onclick = retryFunction;
+    
+    const errorDiv = document.getElementById(`${operation}-result`);
+    if (errorDiv) {
+      errorDiv.appendChild(retryBtn);
+    }
   }
 }
 
