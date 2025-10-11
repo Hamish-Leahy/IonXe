@@ -2193,6 +2193,240 @@ textarea:focus-visible {
   background: var(--accent);
 }
 
+/* AI Lighting System Styles */
+.ai-lighting-container {
+  padding: 20px;
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+.ai-lighting-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 30px;
+  padding-bottom: 20px;
+  border-bottom: 2px solid #333;
+}
+
+.status-indicator {
+  padding: 8px 16px;
+  border-radius: 20px;
+  font-weight: bold;
+  text-transform: uppercase;
+  font-size: 12px;
+}
+
+.status-indicator.ready { background: #4CAF50; color: white; }
+.status-indicator.working { background: #FF9800; color: white; }
+.status-indicator.success { background: #4CAF50; color: white; }
+.status-indicator.error { background: #F44336; color: white; }
+
+.ai-section {
+  margin-bottom: 30px;
+  padding: 20px;
+  background: #1a1a1a;
+  border-radius: 8px;
+  border: 1px solid #333;
+}
+
+.ai-section h3 {
+  margin-top: 0;
+  color: #fff;
+  border-bottom: 1px solid #444;
+  padding-bottom: 10px;
+}
+
+.concept-input textarea {
+  width: 100%;
+  height: 100px;
+  padding: 10px;
+  border: 1px solid #555;
+  border-radius: 4px;
+  background: #2a2a2a;
+  color: #fff;
+  resize: vertical;
+  font-family: inherit;
+}
+
+.ai-button {
+  background: #007bff;
+  color: white;
+  border: none;
+  padding: 10px 20px;
+  border-radius: 4px;
+  cursor: pointer;
+  margin: 5px;
+  font-weight: bold;
+}
+
+.ai-button:hover { background: #0056b3; }
+.ai-button:disabled { background: #666; cursor: not-allowed; }
+.ai-button.primary { background: #28a745; }
+.ai-button.primary:hover { background: #1e7e34; }
+.ai-button.danger { background: #dc3545; }
+.ai-button.danger:hover { background: #c82333; }
+
+.concept-result, .music-result, .augment3d-result {
+  margin-top: 15px;
+  padding: 15px;
+  background: #2a2a2a;
+  border-radius: 4px;
+  border-left: 4px solid #007bff;
+}
+
+.generation-progress {
+  margin-top: 15px;
+}
+
+.progress-bar {
+  width: 100%;
+  height: 20px;
+  background: #333;
+  border-radius: 10px;
+  overflow: hidden;
+}
+
+.progress-fill {
+  height: 100%;
+  background: linear-gradient(90deg, #007bff, #28a745);
+  width: 0%;
+}
+
+@keyframes progress-animation {
+  0% { width: 0%; }
+  50% { width: 70%; }
+  100% { width: 100%; }
+}
+
+.progress-text {
+  display: block;
+  margin-top: 10px;
+  color: #ccc;
+  text-align: center;
+}
+
+.scenes-list {
+  max-height: 400px;
+  overflow-y: auto;
+}
+
+.scene-item {
+  background: #2a2a2a;
+  border: 1px solid #444;
+  border-radius: 4px;
+  margin-bottom: 10px;
+  padding: 15px;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.scene-item:hover { background: #333; }
+.scene-item.selected { border-color: #007bff; background: #1e3a5f; }
+
+.scene-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 10px;
+}
+
+.scene-header h4 {
+  margin: 0;
+  color: #fff;
+}
+
+.scene-actions {
+  display: flex;
+  gap: 5px;
+}
+
+.btn-small {
+  background: #555;
+  color: white;
+  border: none;
+  padding: 5px 10px;
+  border-radius: 3px;
+  cursor: pointer;
+  font-size: 12px;
+}
+
+.btn-small:hover { background: #666; }
+
+.scene-details p {
+  margin: 5px 0;
+  color: #ccc;
+  font-size: 14px;
+}
+
+.scene-preview {
+  background: #2a2a2a;
+  border: 1px solid #444;
+  border-radius: 4px;
+  padding: 20px;
+  min-height: 200px;
+}
+
+.preview-placeholder {
+  text-align: center;
+  color: #666;
+  font-style: italic;
+  padding: 50px;
+}
+
+.scene-cues {
+  margin-top: 15px;
+}
+
+.cue-item {
+  display: flex;
+  align-items: center;
+  padding: 8px;
+  background: #333;
+  border-radius: 4px;
+  margin-bottom: 5px;
+}
+
+.cue-number {
+  background: #007bff;
+  color: white;
+  width: 30px;
+  height: 30px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: bold;
+  margin-right: 15px;
+}
+
+.cue-name {
+  flex: 1;
+  color: #fff;
+  font-weight: bold;
+}
+
+.cue-timing {
+  color: #ccc;
+  font-size: 12px;
+}
+
+.ai-suggestions {
+  background: #2a2a2a;
+  border: 1px solid #444;
+  border-radius: 4px;
+  padding: 15px;
+}
+
+.suggestion-placeholder {
+  text-align: center;
+  color: #666;
+  font-style: italic;
+  padding: 20px;
+}
+
+.hidden { display: none !important; }
+
 /* Print styles */
 @media print {
   .topbar,
