@@ -1,0 +1,245 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <title>IonXe Mobile</title>
+    
+    <!-- PWA Meta Tags -->
+    <meta name="theme-color" content="#1a1a1a">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-title" content="IonXe Mobile">
+    
+    <!-- Manifest -->
+    <link rel="manifest" href="manifest.json">
+    
+    <!-- Icons -->
+    <link rel="apple-touch-icon" href="icons/icon-192x192.png">
+    <link rel="icon" type="image/png" sizes="192x192" href="icons/icon-192x192.png">
+    
+    <!-- Styles -->
+    <link rel="stylesheet" href="styles/mobile.css">
+    
+    <!-- Service Worker -->
+    <script>
+        if ('serviceWorker' in navigator) {
+            window.addEventListener('load', () => {
+                navigator.serviceWorker.register('sw.js')
+                    .then(registration => console.log('SW registered'))
+                    .catch(error => console.log('SW registration failed'));
+            });
+        }
+    </script>
+</head>
+<body>
+    <!-- Loading Screen -->
+    <div id="loading-screen" class="loading-screen">
+        <div class="loading-content">
+            <div class="loading-logo">
+                <div class="logo-icon">⚡</div>
+                <h1>IonXe Mobile</h1>
+            </div>
+            <div class="loading-spinner"></div>
+            <p id="loading-text">Connecting to console...</p>
+        </div>
+    </div>
+
+    <!-- Main App Container -->
+    <div id="app" class="app hidden">
+        <!-- Header -->
+        <header class="app-header">
+            <div class="header-left">
+                <button id="menu-toggle" class="menu-toggle">
+                    <span></span>
+                    <span></span>
+                    <span></span>
+                </button>
+                <h1 class="app-title">IonXe Mobile</h1>
+            </div>
+            <div class="header-right">
+                <div class="connection-status" id="connection-status">
+                    <span class="status-dot"></span>
+                    <span class="status-text">Disconnected</span>
+                </div>
+                <button id="settings-btn" class="icon-btn">⚙️</button>
+            </div>
+        </header>
+
+        <!-- Navigation -->
+        <nav class="bottom-nav">
+            <button class="nav-item active" data-view="faders">
+                <span class="nav-icon">🎛️</span>
+                <span class="nav-label">Faders</span>
+            </button>
+            <button class="nav-item" data-view="scenes">
+                <span class="nav-icon">🎬</span>
+                <span class="nav-label">Scenes</span>
+            </button>
+            <button class="nav-item" data-view="ai">
+                <span class="nav-icon">🤖</span>
+                <span class="nav-label">AI</span>
+            </button>
+            <button class="nav-item" data-view="monitor">
+                <span class="nav-icon">📊</span>
+                <span class="nav-label">Monitor</span>
+            </button>
+        </nav>
+
+        <!-- Main Content -->
+        <main class="main-content">
+            <!-- Faders View -->
+            <div id="faders-view" class="view active">
+                <div class="faders-header">
+                    <h2>Channel Control</h2>
+                    <div class="fader-controls">
+                        <button id="bank-prev" class="control-btn">◀</button>
+                        <span id="bank-info">Bank 1 (1-24)</span>
+                        <button id="bank-next" class="control-btn">▶</button>
+                    </div>
+                </div>
+                
+                <div class="faders-container" id="faders-container">
+                    <!-- Faders will be dynamically generated -->
+                </div>
+                
+                <div class="grand-master">
+                    <label>Grand Master</label>
+                    <div class="master-fader">
+                        <input type="range" id="grand-master" min="0" max="255" value="255" class="master-slider">
+                        <span id="master-value">100%</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Scenes View -->
+            <div id="scenes-view" class="view">
+                <div class="scenes-header">
+                    <h2>Scenes</h2>
+                    <button id="refresh-scenes" class="icon-btn">🔄</button>
+                </div>
+                
+                <div class="scenes-list" id="scenes-list">
+                    <!-- Scenes will be loaded here -->
+                </div>
+                
+                <div class="scene-controls">
+                    <button id="save-scene" class="action-btn primary">Save Current</button>
+                    <button id="clear-scene" class="action-btn danger">Clear All</button>
+                </div>
+            </div>
+
+            <!-- AI Lighting View -->
+            <div id="ai-view" class="view">
+                <div class="ai-header">
+                    <h2>AI Lighting</h2>
+                    <div class="ai-status" id="ai-status">Ready</div>
+                </div>
+                
+                <div class="ai-controls">
+                    <div class="concept-input">
+                        <textarea id="mobile-concept" placeholder="Describe your lighting concept..."></textarea>
+                        <button id="process-concept" class="action-btn">Process</button>
+                    </div>
+                    
+                    <div class="ai-actions">
+                        <button id="generate-scene" class="action-btn primary">Generate Scene</button>
+                        <button id="execute-ai-scene" class="action-btn success">Execute</button>
+                    </div>
+                </div>
+                
+                <div class="ai-suggestions" id="ai-suggestions">
+                    <!-- AI suggestions will appear here -->
+                </div>
+            </div>
+
+            <!-- Monitor View -->
+            <div id="monitor-view" class="view">
+                <div class="monitor-header">
+                    <h2>System Monitor</h2>
+                    <button id="refresh-monitor" class="icon-btn">🔄</button>
+                </div>
+                
+                <div class="monitor-grid">
+                    <div class="monitor-card">
+                        <h3>DMX Output</h3>
+                        <div class="dmx-channels" id="dmx-channels">
+                            <!-- DMX channel status -->
+                        </div>
+                    </div>
+                    
+                    <div class="monitor-card">
+                        <h3>System Status</h3>
+                        <div class="system-stats" id="system-stats">
+                            <!-- System statistics -->
+                        </div>
+                    </div>
+                    
+                    <div class="monitor-card">
+                        <h3>Network</h3>
+                        <div class="network-info" id="network-info">
+                            <!-- Network information -->
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </main>
+
+        <!-- Side Menu -->
+        <div id="side-menu" class="side-menu">
+            <div class="menu-header">
+                <h3>Menu</h3>
+                <button id="menu-close" class="menu-close">×</button>
+            </div>
+            
+            <div class="menu-content">
+                <div class="menu-section">
+                    <h4>Connection</h4>
+                    <div class="connection-settings">
+                        <input type="text" id="console-ip" placeholder="Console IP Address" value="localhost">
+                        <input type="number" id="console-port" placeholder="Port" value="8082">
+                        <button id="connect-btn" class="action-btn">Connect</button>
+                    </div>
+                </div>
+                
+                <div class="menu-section">
+                    <h4>Settings</h4>
+                    <div class="settings-options">
+                        <label class="setting-item">
+                            <input type="checkbox" id="haptic-feedback" checked>
+                            <span>Haptic Feedback</span>
+                        </label>
+                        <label class="setting-item">
+                            <input type="checkbox" id="auto-reconnect" checked>
+                            <span>Auto Reconnect</span>
+                        </label>
+                        <label class="setting-item">
+                            <input type="range" id="brightness" min="0" max="100" value="100">
+                            <span>Brightness</span>
+                        </label>
+                    </div>
+                </div>
+                
+                <div class="menu-section">
+                    <h4>About</h4>
+                    <div class="about-info">
+                        <p>IonXe Mobile v1.0.0</p>
+                        <p>Connected to: <span id="connected-console">Not connected</span></p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Toast Notifications -->
+        <div id="toast-container" class="toast-container"></div>
+    </div>
+
+    <!-- Scripts -->
+    <script src="js/mobile-core.js"></script>
+    <script src="js/mobile-faders.js"></script>
+    <script src="js/mobile-scenes.js"></script>
+    <script src="js/mobile-ai.js"></script>
+    <script src="js/mobile-monitor.js"></script>
+    <script src="js/mobile-app.js"></script>
+</body>
+</html>
