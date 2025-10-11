@@ -197,7 +197,13 @@ class IonXeAiLighting {
       return;
     }
 
+    if (concept.length < 10) {
+      this.core.showError('Please provide a more detailed concept (at least 10 characters)');
+      return;
+    }
+
     this.setStatus('Processing concept...', 'working');
+    this.showLoadingState('concept');
 
     try {
       const response = await this.core.apiFetch(`${this.apiBase}/concept/process`, {
@@ -210,14 +216,18 @@ class IonXeAiLighting {
         this.conceptContext = await response.json();
         this.displayConceptResult(this.conceptContext);
         this.updateGenerateButton();
+        this.setStatus('Concept processed successfully', 'success');
         this.core.showSuccess('Concept processed successfully');
       } else {
-        throw new Error('Failed to process concept');
+        const errorData = await response.json().catch(() => ({}));
+        throw new Error(errorData.message || `Server error: ${response.status}`);
       }
     } catch (error) {
       console.error('Concept processing error:', error);
       this.setStatus('Concept processing failed', 'error');
-      this.core.showError('Concept processing failed');
+      this.core.showError(`Concept processing failed: ${error.message}`);
+    } finally {
+      this.hideLoadingState('concept');
     }
   }
 
@@ -231,7 +241,25 @@ class IonXeAiLighting {
       return;
     }
 
+    // Validate file type
+    const allowedTypes = ['audio/wav', 'audio/mpeg', 'audio/midi', 'audio/mid'];
+    const allowedExtensions = ['.wav', '.mp3', '.mid', '.midi'];
+    const fileExtension = file.name.toLowerCase().substring(file.name.lastIndexOf('.'));
+    
+    if (!allowedTypes.includes(file.type) && !allowedExtensions.includes(fileExtension)) {
+      this.core.showError('Please select a valid audio file (WAV, MP3, MID, MIDI)');
+      return;
+    }
+
+    // Validate file size (max 50MB)
+    const maxSize = 50 * 1024 * 1024; // 50MB
+    if (file.size > maxSize) {
+      this.core.showError('File too large. Please select a file smaller than 50MB');
+      return;
+    }
+
     this.setStatus('Analyzing music...', 'working');
+    this.showLoadingState('music');
 
     try {
       const formData = new FormData();
@@ -246,14 +274,18 @@ class IonXeAiLighting {
         this.musicContext = await response.json();
         this.displayMusicResult(this.musicContext);
         this.updateGenerateButton();
+        this.setStatus('Music analyzed successfully', 'success');
         this.core.showSuccess('Music analyzed successfully');
       } else {
-        throw new Error('Failed to analyze music');
+        const errorData = await response.json().catch(() => ({}));
+        throw new Error(errorData.message || `Server error: ${response.status}`);
       }
     } catch (error) {
       console.error('Music analysis error:', error);
       this.setStatus('Music analysis failed', 'error');
-      this.core.showError('Music analysis failed');
+      this.core.showError(`Music analysis failed: ${error.message}`);
+    } finally {
+      this.hideLoadingState('music');
     }
   }
 
