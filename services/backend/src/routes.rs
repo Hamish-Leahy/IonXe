@@ -340,4 +340,40 @@ pub async fn execute_macro(Json(req): Json<ExecuteMacroRequest>) -> axum::http::
     }
 }
 
+// DMX Output endpoints
+pub async fn get_dmx_status() -> Json<serde_json::Value> {
+    let routing = APP_STATE.read().routing.clone();
+    let outputs_count = routing.outputs.len();
+    let is_active = outputs_count > 0;
+    
+    Json(serde_json::json!({
+        "active": is_active,
+        "outputs_count": outputs_count,
+        "outputs": routing.outputs,
+        "timestamp": time::OffsetDateTime::now_utc().to_string()
+    }))
+}
+
+#[derive(serde::Deserialize)]
+struct DmxTestRequest {
+    pattern: Option<String>,
+    channels: Option<Vec<u16>>,
+    value: Option<u8>
+}
+
+pub async fn test_dmx_output(Json(req): Json<DmxTestRequest>) -> axum::http::StatusCode {
+    // This would typically send a test pattern to the DMX output
+    // For now, we'll just return success
+    // In a real implementation, this would trigger the middleware to send test data
+    
+    let pattern = req.pattern.unwrap_or_else(|| "chase".to_string());
+    let channels = req.channels.unwrap_or_else(|| (1..=24).collect());
+    let value = req.value.unwrap_or(255);
+    
+    // Log the test request
+    tracing::info!("DMX test requested: pattern={}, channels={:?}, value={}", pattern, channels, value);
+    
+    axum::http::StatusCode::NO_CONTENT
+}
+
 
