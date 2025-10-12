@@ -1,0 +1,244 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>IonXe Mobile - Test Page</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+            background: #1a1a1a;
+            color: #fff;
+        }
+        .test-section {
+            background: #2a2a2a;
+            padding: 20px;
+            margin: 20px 0;
+            border-radius: 8px;
+            border: 1px solid #444;
+        }
+        .test-button {
+            background: #007bff;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 4px;
+            cursor: pointer;
+            margin: 5px;
+        }
+        .test-button:hover {
+            background: #0056b3;
+        }
+        .test-result {
+            background: #1a1a1a;
+            padding: 10px;
+            margin: 10px 0;
+            border-radius: 4px;
+            border-left: 4px solid #007bff;
+        }
+        .error {
+            border-left-color: #F44336;
+            background: #2a1a1a;
+        }
+        .success {
+            border-left-color: #4CAF50;
+            background: #1a2a1a;
+        }
+        .info {
+            background: #1a2332;
+            border-left-color: #17a2b8;
+        }
+    </style>
+</head>
+<body>
+    <h1>IonXe Mobile - Test Page</h1>
+    <p>This page tests the mobile app functionality and PWA features.</p>
+    
+    <div class="test-section">
+        <h2>PWA Features Test</h2>
+        <button class="test-button" onclick="testPWAFeatures()">Test PWA Features</button>
+        <div id="pwa-result" class="test-result" style="display: none;"></div>
+    </div>
+
+    <div class="test-section">
+        <h2>Service Worker Test</h2>
+        <button class="test-button" onclick="testServiceWorker()">Test Service Worker</button>
+        <div id="sw-result" class="test-result" style="display: none;"></div>
+    </div>
+
+    <div class="test-section">
+        <h2>Touch Events Test</h2>
+        <button class="test-button" onclick="testTouchEvents()">Test Touch Events</button>
+        <div id="touch-result" class="test-result" style="display: none;"></div>
+    </div>
+
+    <div class="test-section">
+        <h2>Local Storage Test</h2>
+        <button class="test-button" onclick="testLocalStorage()">Test Local Storage</button>
+        <div id="storage-result" class="test-result" style="display: none;"></div>
+    </div>
+
+    <div class="test-section">
+        <h2>API Connection Test</h2>
+        <button class="test-button" onclick="testAPIConnection()">Test API Connection</button>
+        <div id="api-result" class="test-result" style="display: none;"></div>
+    </div>
+
+    <div class="test-section">
+        <h2>Mobile App Launch</h2>
+        <button class="test-button" onclick="launchMobileApp()">Launch Mobile App</button>
+        <div id="launch-result" class="test-result" style="display: none;"></div>
+    </div>
+
+    <script>
+        function showResult(elementId, message, type = 'info') {
+            const element = document.getElementById(elementId);
+            element.style.display = 'block';
+            element.textContent = message;
+            element.className = `test-result ${type}`;
+        }
+
+        function testPWAFeatures() {
+            const result = [];
+            
+            // Check if running as PWA
+            if (window.matchMedia('(display-mode: standalone)').matches) {
+                result.push('✅ Running as PWA');
+            } else {
+                result.push('❌ Not running as PWA');
+            }
+            
+            // Check if installed
+            if (window.navigator.standalone === true) {
+                result.push('✅ App is installed (iOS)');
+            } else if (window.matchMedia('(display-mode: standalone)').matches) {
+                result.push('✅ App is installed (Android/Desktop)');
+            } else {
+                result.push('❌ App not installed');
+            }
+            
+            // Check viewport
+            if (window.innerWidth <= 768) {
+                result.push('✅ Mobile viewport detected');
+            } else {
+                result.push('⚠️ Desktop viewport detected');
+            }
+            
+            // Check touch support
+            if ('ontouchstart' in window) {
+                result.push('✅ Touch events supported');
+            } else {
+                result.push('❌ Touch events not supported');
+            }
+            
+            showResult('pwa-result', result.join('\n'), 'info');
+        }
+
+        function testServiceWorker() {
+            if ('serviceWorker' in navigator) {
+                navigator.serviceWorker.getRegistration()
+                    .then(registration => {
+                        if (registration) {
+                            showResult('sw-result', '✅ Service Worker is registered and active', 'success');
+                        } else {
+                            showResult('sw-result', '❌ Service Worker not registered', 'error');
+                        }
+                    })
+                    .catch(error => {
+                        showResult('sw-result', `❌ Service Worker error: ${error.message}`, 'error');
+                    });
+            } else {
+                showResult('sw-result', '❌ Service Worker not supported', 'error');
+            }
+        }
+
+        function testTouchEvents() {
+            const touchEvents = [];
+            
+            // Test touch event listeners
+            let touchStart = false;
+            let touchEnd = false;
+            
+            document.addEventListener('touchstart', () => {
+                touchStart = true;
+            }, { once: true });
+            
+            document.addEventListener('touchend', () => {
+                touchEnd = true;
+            }, { once: true });
+            
+            setTimeout(() => {
+                if (touchStart) {
+                    touchEvents.push('✅ Touch start events working');
+                } else {
+                    touchEvents.push('❌ Touch start events not working');
+                }
+                
+                if (touchEnd) {
+                    touchEvents.push('✅ Touch end events working');
+                } else {
+                    touchEvents.push('❌ Touch end events not working');
+                }
+                
+                // Test haptic feedback
+                if (navigator.vibrate) {
+                    touchEvents.push('✅ Haptic feedback supported');
+                    navigator.vibrate(100);
+                } else {
+                    touchEvents.push('❌ Haptic feedback not supported');
+                }
+                
+                showResult('touch-result', touchEvents.join('\n'), 'info');
+            }, 1000);
+        }
+
+        function testLocalStorage() {
+            try {
+                // Test localStorage
+                localStorage.setItem('test-key', 'test-value');
+                const value = localStorage.getItem('test-key');
+                localStorage.removeItem('test-key');
+                
+                if (value === 'test-value') {
+                    showResult('storage-result', '✅ Local Storage is working', 'success');
+                } else {
+                    showResult('storage-result', '❌ Local Storage not working properly', 'error');
+                }
+            } catch (error) {
+                showResult('storage-result', `❌ Local Storage error: ${error.message}`, 'error');
+            }
+        }
+
+        async function testAPIConnection() {
+            try {
+                const response = await fetch('http://localhost:8082/api/status');
+                if (response.ok) {
+                    showResult('api-result', '✅ IonXe console is reachable', 'success');
+                } else {
+                    showResult('api-result', `⚠️ IonXe console responded with status: ${response.status}`, 'error');
+                }
+            } catch (error) {
+                showResult('api-result', `❌ Cannot connect to IonXe console: ${error.message}`, 'error');
+            }
+        }
+
+        function launchMobileApp() {
+            // Redirect to main app
+            window.location.href = '/';
+        }
+
+        // Auto-run tests on page load
+        window.addEventListener('load', () => {
+            setTimeout(() => {
+                testPWAFeatures();
+                testServiceWorker();
+                testLocalStorage();
+                testAPIConnection();
+            }, 1000);
+        });
+    </script>
+</body>
+</html>
