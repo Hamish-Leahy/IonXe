@@ -1,0 +1,453 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>IonXe DMX Output Test</title>
+    <style>
+        body {
+            font-family: system-ui, -apple-system, sans-serif;
+            background: #0b0f14;
+            color: #e6efff;
+            margin: 0;
+            padding: 20px;
+        }
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+        }
+        .test-section {
+            background: #1b2430;
+            border: 1px solid #1b2a3a;
+            border-radius: 8px;
+            padding: 20px;
+            margin-bottom: 20px;
+        }
+        .test-section h3 {
+            margin-top: 0;
+            color: #2e7dd7;
+        }
+        .row {
+            display: flex;
+            gap: 12px;
+            align-items: center;
+            margin-bottom: 12px;
+        }
+        button {
+            background: #253243;
+            color: #e6efff;
+            border: 1px solid #223244;
+            border-radius: 6px;
+            padding: 8px 16px;
+            cursor: pointer;
+        }
+        button:hover {
+            border-color: #2e7dd7;
+        }
+        button:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+        input, select {
+            background: #0e151d;
+            border: 1px solid #1b2a3a;
+            color: #e6efff;
+            padding: 6px 8px;
+            border-radius: 6px;
+        }
+        .status {
+            color: #8aa0b5;
+            font-size: 12px;
+        }
+        .status.success {
+            color: #22b07d;
+        }
+        .status.error {
+            color: #e74c3c;
+        }
+        .log {
+            background: #0e151d;
+            border: 1px solid #1b2a3a;
+            border-radius: 6px;
+            padding: 12px;
+            font-family: monospace;
+            font-size: 12px;
+            max-height: 200px;
+            overflow-y: auto;
+        }
+        .channel-grid {
+            display: grid;
+            grid-template-columns: repeat(16, 1fr);
+            gap: 2px;
+            margin-top: 12px;
+        }
+        .channel {
+            background: #0e151d;
+            border: 1px solid #1b2a3a;
+            border-radius: 4px;
+            padding: 4px;
+            text-align: center;
+            font-size: 10px;
+        }
+        .channel.active {
+            background: #2e7dd7;
+            border-color: #2e7dd7;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>IonXe DMX Output Test</h1>
+        
+        <div class="test-section">
+            <h3>Connection Test</h3>
+            <div class="row">
+                <button id="test-connection">Test Connection</button>
+                <span id="connection-status" class="status">Not tested</span>
+            </div>
+        </div>
+
+        <div class="test-section">
+            <h3>DMX Output Configuration</h3>
+            <div class="row">
+                <label>Protocol:</label>
+                <select id="protocol">
+                    <option value="artnet">Art-Net</option>
+                    <option value="sacn">sACN (E1.31)</option>
+                </select>
+                <label>Host:</label>
+                <input id="host" value="127.0.0.1" placeholder="IP Address">
+                <label>Port:</label>
+                <input id="port" type="number" value="5568" placeholder="Port">
+                <label>Universe:</label>
+                <input id="universe" type="number" value="1" min="1" max="32768">
+            </div>
+            <div class="row">
+                <button id="start-output">Start Output</button>
+                <button id="stop-output">Stop Output</button>
+                <button id="test-pattern">Test Pattern</button>
+                <span id="output-status" class="status">Stopped</span>
+            </div>
+        </div>
+
+        <div class="test-section">
+            <h3>Channel Control</h3>
+            <div class="row">
+                <label>Channels:</label>
+                <input id="channels" value="1-24" placeholder="e.g., 1-24,31,45">
+                <label>Value:</label>
+                <input id="value" type="range" min="0" max="255" value="255">
+                <span id="value-display">255</span>
+                <button id="set-channels">Set Channels</button>
+            </div>
+            <div class="row">
+                <button id="all-on">All On</button>
+                <button id="all-off">All Off</button>
+                <button id="chase">Chase Pattern</button>
+                <button id="random">Random</button>
+            </div>
+        </div>
+
+        <div class="test-section">
+            <h3>Channel Preview (First 64 channels)</h3>
+            <div class="channel-grid" id="channel-preview">
+                <!-- Channels will be generated here -->
+            </div>
+        </div>
+
+        <div class="test-section">
+            <h3>Test Log</h3>
+            <div class="log" id="test-log">
+                <div>DMX Output Test initialized</div>
+            </div>
+            <div class="row">
+                <button id="clear-log">Clear Log</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        class DmxTest {
+            constructor() {
+                this.isRunning = false;
+                this.outputInterval = null;
+                this.channels = new Array(512).fill(0);
+                this.initialize();
+            }
+
+            initialize() {
+                this.setupEventListeners();
+                this.generateChannelPreview();
+                this.updateValueDisplay();
+            }
+
+            setupEventListeners() {
+                // Connection test
+                document.getElementById('test-connection').addEventListener('click', () => this.testConnection());
+
+                // Output controls
+                document.getElementById('start-output').addEventListener('click', () => this.startOutput());
+                document.getElementById('stop-output').addEventListener('stop-output').addEventListener('click', () => this.stopOutput());
+                document.getElementById('test-pattern').addEventListener('click', () => this.testPattern());
+
+                // Channel controls
+                document.getElementById('set-channels').addEventListener('click', () => this.setChannels());
+                document.getElementById('all-on').addEventListener('click', () => this.allOn());
+                document.getElementById('all-off').addEventListener('click', () => this.allOff());
+                document.getElementById('chase').addEventListener('click', () => this.chasePattern());
+                document.getElementById('random').addEventListener('click', () => this.randomPattern());
+
+                // Value slider
+                document.getElementById('value').addEventListener('input', (e) => {
+                    document.getElementById('value-display').textContent = e.target.value;
+                });
+
+                // Log clear
+                document.getElementById('clear-log').addEventListener('click', () => this.clearLog());
+            }
+
+            generateChannelPreview() {
+                const preview = document.getElementById('channel-preview');
+                preview.innerHTML = '';
+                
+                for (let i = 0; i < 64; i++) {
+                    const channel = document.createElement('div');
+                    channel.className = 'channel';
+                    channel.dataset.channel = i + 1;
+                    channel.innerHTML = `<div>${i + 1}</div><div>0</div>`;
+                    preview.appendChild(channel);
+                }
+            }
+
+            updateChannelPreview() {
+                for (let i = 0; i < 64; i++) {
+                    const channel = document.querySelector(`[data-channel="${i + 1}"]`);
+                    if (channel) {
+                        const value = this.channels[i];
+                        channel.querySelector('div:last-child').textContent = value;
+                        channel.classList.toggle('active', value > 0);
+                    }
+                }
+            }
+
+            updateValueDisplay() {
+                const slider = document.getElementById('value');
+                document.getElementById('value-display').textContent = slider.value;
+            }
+
+            log(message, type = 'info') {
+                const log = document.getElementById('test-log');
+                const div = document.createElement('div');
+                div.className = type;
+                div.textContent = `[${new Date().toLocaleTimeString()}] ${message}`;
+                log.appendChild(div);
+                log.scrollTop = log.scrollHeight;
+            }
+
+            clearLog() {
+                document.getElementById('test-log').innerHTML = '<div>Log cleared</div>';
+            }
+
+            async testConnection() {
+                try {
+                    const response = await fetch('/api/v1/health');
+                    if (response.ok) {
+                        document.getElementById('connection-status').textContent = 'Connected';
+                        document.getElementById('connection-status').className = 'status success';
+                        this.log('Connection test successful', 'success');
+                    } else {
+                        throw new Error(`HTTP ${response.status}`);
+                    }
+                } catch (error) {
+                    document.getElementById('connection-status').textContent = 'Failed';
+                    document.getElementById('connection-status').className = 'status error';
+                    this.log(`Connection test failed: ${error.message}`, 'error');
+                }
+            }
+
+            async startOutput() {
+                try {
+                    // Update routing configuration
+                    await this.updateRoutingConfig();
+                    
+                    this.isRunning = true;
+                    const rate = 100; // 100 FPS
+                    const intervalMs = 1000 / rate;
+                    
+                    this.outputInterval = setInterval(() => {
+                        this.sendDmxData();
+                    }, intervalMs);
+
+                    document.getElementById('output-status').textContent = 'Running';
+                    document.getElementById('output-status').className = 'status success';
+                    document.getElementById('start-output').disabled = true;
+                    document.getElementById('stop-output').disabled = false;
+                    
+                    this.log('DMX output started');
+                } catch (error) {
+                    this.log(`Failed to start output: ${error.message}`, 'error');
+                }
+            }
+
+            stopOutput() {
+                this.isRunning = false;
+                if (this.outputInterval) {
+                    clearInterval(this.outputInterval);
+                    this.outputInterval = null;
+                }
+
+                document.getElementById('output-status').textContent = 'Stopped';
+                document.getElementById('output-status').className = 'status';
+                document.getElementById('start-output').disabled = false;
+                document.getElementById('stop-output').disabled = true;
+                
+                this.log('DMX output stopped');
+            }
+
+            async testPattern() {
+                try {
+                    // Send a test pattern
+                    const testData = new Uint8Array(512);
+                    for (let i = 0; i < 512; i++) {
+                        testData[i] = (i % 256);
+                    }
+
+                    await this.sendDmxLevels(testData);
+                    this.log('Test pattern sent');
+                } catch (error) {
+                    this.log(`Test pattern failed: ${error.message}`, 'error');
+                }
+            }
+
+            async sendDmxData() {
+                try {
+                    const dmxData = new Uint8Array(this.channels);
+                    await this.sendDmxLevels(dmxData);
+                } catch (error) {
+                    console.error('DMX send error:', error);
+                }
+            }
+
+            async sendDmxLevels(data) {
+                const response = await fetch('/api/v1/levels', {
+                    method: 'PUT',
+                    headers: {
+                        'Content-Type': 'application/octet-stream'
+                    },
+                    body: data
+                });
+
+                if (!response.ok) {
+                    throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+                }
+            }
+
+            async updateRoutingConfig() {
+                const protocol = document.getElementById('protocol').value;
+                const host = document.getElementById('host').value;
+                const port = parseInt(document.getElementById('port').value);
+                const universe = parseInt(document.getElementById('universe').value);
+
+                const outputTarget = {
+                    id: crypto.randomUUID(),
+                    kind: protocol,
+                    label: `DMX Output ${protocol.toUpperCase()}`,
+                    universe: universe,
+                    ...(protocol === 'artnet' 
+                        ? { host: host, port: port }
+                        : { host: host, port: port }
+                    )
+                };
+
+                const routingConfig = {
+                    outputs: [outputTarget]
+                };
+
+                const response = await fetch('/api/v1/routing', {
+                    method: 'PUT',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(routingConfig)
+                });
+
+                if (!response.ok) {
+                    throw new Error(`Failed to update routing: ${response.statusText}`);
+                }
+            }
+
+            setChannels() {
+                const channelsInput = document.getElementById('channels').value;
+                const value = parseInt(document.getElementById('value').value);
+                
+                try {
+                    const channels = this.parseChannelRange(channelsInput);
+                    for (const channel of channels) {
+                        if (channel >= 1 && channel <= 512) {
+                            this.channels[channel - 1] = value;
+                        }
+                    }
+                    this.updateChannelPreview();
+                    this.log(`Set channels ${channelsInput} to ${value}`);
+                } catch (error) {
+                    this.log(`Invalid channel range: ${channelsInput}`, 'error');
+                }
+            }
+
+            parseChannelRange(input) {
+                const channels = [];
+                const parts = input.split(',');
+                
+                for (const part of parts) {
+                    const trimmed = part.trim();
+                    if (trimmed.includes('-')) {
+                        const [start, end] = trimmed.split('-').map(n => parseInt(n.trim()));
+                        for (let i = start; i <= end; i++) {
+                            channels.push(i);
+                        }
+                    } else {
+                        channels.push(parseInt(trimmed));
+                    }
+                }
+                
+                return channels;
+            }
+
+            allOn() {
+                const value = parseInt(document.getElementById('value').value);
+                this.channels.fill(value);
+                this.updateChannelPreview();
+                this.log(`All channels set to ${value}`);
+            }
+
+            allOff() {
+                this.channels.fill(0);
+                this.updateChannelPreview();
+                this.log('All channels off');
+            }
+
+            chasePattern() {
+                this.channels.fill(0);
+                for (let i = 0; i < 24; i++) {
+                    this.channels[i * 20] = 255;
+                }
+                this.updateChannelPreview();
+                this.log('Chase pattern set');
+            }
+
+            randomPattern() {
+                for (let i = 0; i < 512; i++) {
+                    this.channels[i] = Math.floor(Math.random() * 256);
+                }
+                this.updateChannelPreview();
+                this.log('Random pattern set');
+            }
+        }
+
+        // Initialize the test when the page loads
+        document.addEventListener('DOMContentLoaded', () => {
+            new DmxTest();
+        });
+    </script>
+</body>
+</html>
