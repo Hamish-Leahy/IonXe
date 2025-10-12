@@ -9,19 +9,65 @@
     tableBody.innerHTML = '';
     qListManager.cues.forEach((cue, index) => {
       const tr = document.createElement('tr');
-      if (cue.state.isActive) tr.classList.add('active');
-      if (index === qListManager.currentCueIndex) tr.classList.add('current');
+      tr.className = 'qlist-cue-row';
+      if (cue.state.isActive) tr.classList.add('playing');
+      if (index === qListManager.currentCueIndex) tr.classList.add('selected');
       tr.dataset.id = cue.id;
       tr.draggable = true;
+      
+      // Enhanced table row with new columns
       tr.innerHTML = `
-        <td class="cue-number">${cue.number}</td>
-        <td contenteditable="true" data-field="label">${cue.label}</td>
-        <td contenteditable="true" data-field="description">${cue.description}</td>
-        <td contenteditable="true" data-field="fadeIn">${cue.timing.fadeIn}</td>
-        <td contenteditable="true" data-field="fadeOut">${cue.timing.fadeOut}</td>
-        <td contenteditable="true" data-field="delay">${cue.timing.delay}</td>
-        <td contenteditable="true" data-field="follow">${cue.timing.follow}</td>
-        <td><progress max="100" value="${cue.state.progress}"></progress></td>
+        <td class="col-number">
+          <span class="qlist-cue-number">${cue.number}</span>
+        </td>
+        <td class="col-label">
+          <span class="qlist-cue-label" contenteditable="true" data-field="label">${cue.label}</span>
+        </td>
+        <td class="col-description">
+          <span class="qlist-cue-description" contenteditable="true" data-field="description">${cue.description || ''}</span>
+        </td>
+        <td class="col-hang">
+          <span class="qlist-cue-hang">${cue.timing.hang || '0'}</span>
+        </td>
+        <td class="col-curve">
+          <span class="qlist-cue-curve">${cue.timing.curve || 'smooth'}</span>
+        </td>
+        <td class="col-effects">
+          <div class="qlist-cue-effects">
+            ${(cue.effects || []).map(effect => 
+              `<span class="qlist-effect-tag ${effect.type}">${effect.name}</span>`
+            ).join('')}
+          </div>
+        </td>
+        <td class="col-link">
+          <span class="qlist-cue-link">${cue.link ? `→ ${cue.link}` : ''}</span>
+        </td>
+        <td class="col-fade-in">
+          <span class="qlist-cue-timing" contenteditable="true" data-field="fadeIn">${cue.timing.fadeIn || '0'}</span>
+        </td>
+        <td class="col-fade-out">
+          <span class="qlist-cue-timing" contenteditable="true" data-field="fadeOut">${cue.timing.fadeOut || '0'}</span>
+        </td>
+        <td class="col-delay">
+          <span class="qlist-cue-timing" contenteditable="true" data-field="delay">${cue.timing.delay || '0'}</span>
+        </td>
+        <td class="col-follow">
+          <span class="qlist-cue-follow" contenteditable="true" data-field="follow">${cue.timing.follow || '0'}</span>
+        </td>
+        <td class="col-progress">
+          <div class="qlist-cue-progress">
+            <div class="qlist-progress-bar" style="width: ${cue.state.progress || 0}%"></div>
+          </div>
+        </td>
+        <td class="col-actions">
+          <div class="qlist-cue-actions">
+            <button class="qlist-edit-btn" onclick="editCue('${cue.id}')" title="Edit">✏️</button>
+            <button class="qlist-duplicate-btn" onclick="duplicateCue('${cue.id}')" title="Duplicate">📋</button>
+            <button class="qlist-move-up-btn" onclick="moveCueUp('${cue.id}')" title="Move Up">⬆️</button>
+            <button class="qlist-move-down-btn" onclick="moveCueDown('${cue.id}')" title="Move Down">⬇️</button>
+            <button class="qlist-delete-btn" onclick="deleteCue('${cue.id}')" title="Delete">🗑️</button>
+          </div>
+        </td>
       `;
       tableBody.appendChild(tr);
     });
