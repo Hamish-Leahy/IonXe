@@ -2620,6 +2620,166 @@ textarea:focus-visible {
   }
 }
 
+/* DMX Output Styles */
+.dmx-preview {
+  background: var(--panel);
+  border: 1px solid #1b2a3a;
+  border-radius: 8px;
+  padding: 12px;
+  margin-top: 8px;
+  max-height: 400px;
+  overflow-y: auto;
+}
+
+.dmx-preview-row {
+  display: grid;
+  grid-template-columns: repeat(16, 1fr);
+  gap: 2px;
+  margin-bottom: 2px;
+}
+
+.dmx-channel-indicator {
+  background: #0e151d;
+  border: 1px solid #1b2a3a;
+  border-radius: 4px;
+  padding: 4px;
+  text-align: center;
+  font-size: 10px;
+  transition: all 0.2s ease;
+  position: relative;
+  min-height: 40px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+
+.dmx-channel-indicator:hover {
+  border-color: var(--accent);
+  background: #1a2332;
+}
+
+.channel-number {
+  color: var(--muted);
+  font-weight: bold;
+  font-size: 9px;
+}
+
+.channel-value {
+  color: var(--text);
+  font-weight: bold;
+  font-size: 11px;
+  margin-top: 2px;
+}
+
+.stats-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 16px;
+  margin-top: 8px;
+}
+
+.stat-item {
+  background: var(--panel);
+  border: 1px solid #1b2a3a;
+  border-radius: 6px;
+  padding: 12px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.stat-item label {
+  color: var(--muted);
+  font-size: 12px;
+  font-weight: 500;
+}
+
+.stat-item span {
+  color: var(--text);
+  font-weight: bold;
+  font-size: 14px;
+}
+
+.status.running {
+  color: var(--accent2);
+  font-weight: bold;
+}
+
+.status.stopped {
+  color: #e74c3c;
+  font-weight: bold;
+}
+
+.discovered-devices {
+  background: var(--panel);
+  border: 1px solid #1b2a3a;
+  border-radius: 6px;
+  padding: 12px;
+  margin-top: 8px;
+  min-height: 100px;
+}
+
+.discovered-devices p {
+  color: var(--muted);
+  font-style: italic;
+  margin: 0;
+}
+
+/* DMX Output specific controls */
+#dmx-output .row {
+  margin-bottom: 16px;
+}
+
+#dmx-output label {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  color: var(--text);
+  font-weight: 500;
+}
+
+#dmx-output input[type="range"] {
+  width: 120px;
+}
+
+#dmx-output select {
+  min-width: 120px;
+}
+
+#dmx-output input[type="number"] {
+  width: 80px;
+}
+
+#dmx-output button {
+  min-width: 100px;
+}
+
+#dmx-output button:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+#dmx-output button:disabled:hover {
+  border-color: #223244;
+}
+
+/* Responsive design for DMX output */
+@media (max-width: 768px) {
+  .dmx-preview-row {
+    grid-template-columns: repeat(8, 1fr);
+  }
+  
+  .stats-grid {
+    grid-template-columns: 1fr;
+  }
+  
+  .stat-item {
+    flex-direction: column;
+    gap: 4px;
+    text-align: center;
+  }
+}
+
 /* Print styles */
 @media print {
   .topbar,
