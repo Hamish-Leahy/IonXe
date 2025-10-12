@@ -348,25 +348,83 @@
           </div>
         </div>
       </div>
-      <table id="qlist-table">
-        <thead>
-          <tr>
-            <th>#</th>
-            <th>Label</th>
-            <th>Description</th>
-            <th>Fade In</th>
-            <th>Fade Out</th>
-            <th>Delay</th>
-            <th>Follow</th>
-            <th>Hang</th>
-            <th>Curve</th>
-            <th>Effects</th>
-            <th>Link</th>
-            <th>Progress</th>
-          </tr>
-        </thead>
-        <tbody></tbody>
-      </table>
+      <div class="table-container">
+        <div class="table-header">
+          <div class="table-controls">
+            <button id="qlist-toggle-columns" class="btn-secondary">
+              <span class="btn-icon">⚙️</span>
+              Columns
+            </button>
+            <button id="qlist-export-table" class="btn-secondary">
+              <span class="btn-icon">📊</span>
+              Export
+            </button>
+            <div class="table-search">
+              <input type="text" id="qlist-search" placeholder="Search cues..." class="search-input"/>
+              <span class="search-icon">🔍</span>
+            </div>
+          </div>
+        </div>
+        <table id="qlist-table">
+          <thead>
+            <tr>
+              <th class="col-number">
+                <span class="col-header">#</span>
+                <div class="col-sort" data-sort="number">↕️</div>
+              </th>
+              <th class="col-label">
+                <span class="col-header">Label</span>
+                <div class="col-sort" data-sort="label">↕️</div>
+              </th>
+              <th class="col-description">
+                <span class="col-header">Description</span>
+                <div class="col-sort" data-sort="description">↕️</div>
+              </th>
+              <th class="col-hang">
+                <span class="col-header">Hang</span>
+                <div class="col-sort" data-sort="hang">↕️</div>
+              </th>
+              <th class="col-curve">
+                <span class="col-header">Curve</span>
+                <div class="col-sort" data-sort="curve">↕️</div>
+              </th>
+              <th class="col-effects">
+                <span class="col-header">Effects</span>
+                <div class="col-sort" data-sort="effects">↕️</div>
+              </th>
+              <th class="col-link">
+                <span class="col-header">Link</span>
+                <div class="col-sort" data-sort="link">↕️</div>
+              </th>
+              <th class="col-fade-in">
+                <span class="col-header">Fade In</span>
+                <div class="col-sort" data-sort="fadeIn">↕️</div>
+              </th>
+              <th class="col-fade-out">
+                <span class="col-header">Fade Out</span>
+                <div class="col-sort" data-sort="fadeOut">↕️</div>
+              </th>
+              <th class="col-delay">
+                <span class="col-header">Delay</span>
+                <div class="col-sort" data-sort="delay">↕️</div>
+              </th>
+              <th class="col-follow">
+                <span class="col-header">Follow</span>
+                <div class="col-sort" data-sort="follow">↕️</div>
+              </th>
+              <th class="col-progress">
+                <span class="col-header">Progress</span>
+                <div class="col-sort" data-sort="progress">↕️</div>
+              </th>
+              <th class="col-actions">
+                <span class="col-header">Actions</span>
+              </th>
+            </tr>
+          </thead>
+          <tbody id="qlist-tbody">
+          </tbody>
+        </table>
+      </div>
     </div>
     <div id="view-auth" class="view">
       <div class="row">
