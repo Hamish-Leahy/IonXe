@@ -135,13 +135,35 @@
         <input id="qlist-import-file" type="file" accept="application/json" style="display:none"/>
         <button id="qlist-import">Import</button>
       </div>
-      <div class="row">
-        <button id="qlist-prev">Prev</button>
-        <button id="qlist-go">Go</button>
-        <button id="qlist-next">Next</button>
-        <button id="qlist-pause">Pause</button>
-        <button id="qlist-stop">Stop</button>
-        <span id="qlist-status" class="status"></span>
+      <div class="row qlist-playback-controls">
+        <div class="playback-main">
+          <button id="qlist-prev" class="btn-secondary" title="Previous Cue (Ctrl+↑)">
+            <span class="btn-icon">⏮</span>
+            <span class="btn-text">Prev</span>
+          </button>
+          <button id="qlist-go" class="btn-primary btn-large" title="Go to Cue (Ctrl+Enter)">
+            <span class="btn-icon">▶</span>
+            <span class="btn-text">Go</span>
+          </button>
+          <button id="qlist-next" class="btn-secondary" title="Next Cue (Ctrl+↓)">
+            <span class="btn-icon">⏭</span>
+            <span class="btn-text">Next</span>
+          </button>
+        </div>
+        <div class="playback-secondary">
+          <button id="qlist-pause" class="btn-warning" title="Pause/Resume (Space)">
+            <span class="btn-icon">⏸</span>
+            <span class="btn-text">Pause</span>
+          </button>
+          <button id="qlist-stop" class="btn-danger" title="Stop (Ctrl+.)">
+            <span class="btn-icon">⏹</span>
+            <span class="btn-text">Stop</span>
+          </button>
+        </div>
+        <div class="playback-info">
+          <span id="qlist-current-cue" class="cue-display">No Cue</span>
+          <span id="qlist-status" class="status"></span>
+        </div>
       </div>
       <div class="row">
         <label>Auto-Follow: <input id="qlist-auto-follow" type="checkbox"/></label>
