@@ -137,6 +137,7 @@ class IonXeCore {
       'qlist',
       'files',
       'auth',
+      'dmx-output',
       'ai-lighting'
     ];
 
