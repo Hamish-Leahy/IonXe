@@ -138,7 +138,8 @@ class IonXeCore {
       'files',
       'auth',
       'dmx-output',
-      'ai-lighting'
+      'ai-lighting',
+      'live-audio'
     ];
 
     moduleOrder.forEach(moduleName => {
@@ -146,6 +147,8 @@ class IonXeCore {
         let className;
         if (moduleName === 'ai-lighting') {
           className = 'AiLighting';
+        } else if (moduleName === 'live-audio') {
+          className = 'LiveAudio';
         } else {
           className = moduleName.charAt(0).toUpperCase() + moduleName.slice(1);
         }

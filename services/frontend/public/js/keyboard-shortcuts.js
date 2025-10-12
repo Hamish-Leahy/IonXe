@@ -32,6 +32,7 @@ class IonXeKeyboardShortcuts {
     this.addShortcut('ctrl+9', 'Go to Color', () => this.navigateToTab('color'));
     this.addShortcut('ctrl+0', 'Go to Fixtures', () => this.navigateToTab('fixtures'));
     this.addShortcut('ctrl+shift+d', 'Go to DMX Output', () => this.navigateToTab('dmx-output'));
+    this.addShortcut('ctrl+shift+l', 'Go to Live Audio', () => this.navigateToTab('live-audio'));
     this.addShortcut('ctrl+shift+a', 'Go to AI Lighting', () => this.navigateToTab('ai-lighting'));
     
     // Fader shortcuts
@@ -258,7 +259,7 @@ class IonXeKeyboardShortcuts {
     // Group shortcuts by category
     const categories = {
       'Global': ['ctrl+s', 'ctrl+z', 'ctrl+y', 'ctrl+shift+z'],
-      'Navigation': ['ctrl+1', 'ctrl+2', 'ctrl+3', 'ctrl+4', 'ctrl+5', 'ctrl+6', 'ctrl+7', 'ctrl+8', 'ctrl+9', 'ctrl+0', 'ctrl+shift+d', 'ctrl+shift+a'],
+      'Navigation': ['ctrl+1', 'ctrl+2', 'ctrl+3', 'ctrl+4', 'ctrl+5', 'ctrl+6', 'ctrl+7', 'ctrl+8', 'ctrl+9', 'ctrl+0', 'ctrl+shift+d', 'ctrl+shift+l', 'ctrl+shift+a'],
       'Faders': ['space', 'ctrl+space', 'ctrl+shift+space'],
       'Selection': ['ctrl+a', 'escape', 'ctrl+d'],
       'Scenes': ['ctrl+shift+s', 'ctrl+r', 'ctrl+shift+r'],
