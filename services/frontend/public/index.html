@@ -182,6 +182,78 @@
     <div id="view-ai-lighting" class="view">
       <!-- AI Lighting content will be dynamically generated -->
     </div>
+    <div id="view-dmx-output" class="view">
+      <div class="row">
+        <h3>DMX Output Configuration</h3>
+      </div>
+      <div class="row">
+        <label>Output Status: <span id="dmx-status" class="status">Stopped</span></label>
+        <button id="dmx-start">Start Output</button>
+        <button id="dmx-stop">Stop Output</button>
+        <button id="dmx-test">Test Output</button>
+      </div>
+      <div class="row">
+        <label>Protocol: 
+          <select id="dmx-protocol">
+            <option value="artnet">Art-Net</option>
+            <option value="sacn">sACN (E1.31)</option>
+          </select>
+        </label>
+        <label>Host: <input id="dmx-host" value="127.0.0.1" placeholder="IP Address"/></label>
+        <label>Port: <input id="dmx-port" type="number" value="5568" placeholder="Port"/></label>
+        <label>Universe: <input id="dmx-universe" type="number" value="1" min="1" max="32768"/></label>
+      </div>
+      <div class="row">
+        <label>Update Rate: 
+          <select id="dmx-rate">
+            <option value="25">25 FPS (40ms)</option>
+            <option value="30">30 FPS (33ms)</option>
+            <option value="44">44 FPS (23ms)</option>
+            <option value="60">60 FPS (17ms)</option>
+            <option value="100" selected>100 FPS (10ms)</option>
+          </select>
+        </label>
+        <label>Grand Master: <input id="dmx-gm" type="range" min="0" max="255" value="255"/></label>
+        <span id="dmx-gm-value" class="status">255</span>
+      </div>
+      <div class="row">
+        <h4>Output Statistics</h4>
+      </div>
+      <div class="row">
+        <div class="stats-grid">
+          <div class="stat-item">
+            <label>Packets Sent:</label>
+            <span id="dmx-packets-sent">0</span>
+          </div>
+          <div class="stat-item">
+            <label>Bytes Sent:</label>
+            <span id="dmx-bytes-sent">0</span>
+          </div>
+          <div class="stat-item">
+            <label>Current FPS:</label>
+            <span id="dmx-current-fps">0</span>
+          </div>
+          <div class="stat-item">
+            <label>Last Packet:</label>
+            <span id="dmx-last-packet">Never</span>
+          </div>
+        </div>
+      </div>
+      <div class="row">
+        <h4>Channel Preview</h4>
+        <div id="dmx-preview" class="dmx-preview">
+          <!-- Channel preview will be generated here -->
+        </div>
+      </div>
+      <div class="row">
+        <h4>Network Diagnostics</h4>
+        <button id="dmx-ping">Ping Target</button>
+        <button id="dmx-discover">Discover Devices</button>
+        <div id="dmx-discovered" class="discovered-devices">
+          <!-- Discovered devices will be listed here -->
+        </div>
+      </div>
+    </div>
     <!-- Modular JavaScript files -->
     <script src="js/core.js"></script>
     <script src="js/faders.js"></script>
