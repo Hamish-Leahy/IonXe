@@ -333,3 +333,4 @@ document.addEventListener('DOMContentLoaded', () => {
     window.mobileFaders = new MobileFaders(window.mobileCore);
   }
 });
+

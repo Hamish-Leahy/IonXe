@@ -427,3 +427,4 @@ class MobileCore {
 
 // Initialize mobile core
 window.mobileCore = new MobileCore();
+

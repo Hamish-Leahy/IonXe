@@ -493,3 +493,4 @@ document.addEventListener('DOMContentLoaded', () => {
     window.mobileAI = new MobileAI(window.mobileCore);
   }
 });
+

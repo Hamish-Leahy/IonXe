@@ -425,3 +425,4 @@ document.addEventListener('DOMContentLoaded', () => {
     window.mobileScenes = new MobileScenes(window.mobileCore);
   }
 });
+

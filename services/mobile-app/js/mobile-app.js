@@ -474,3 +474,4 @@ if ('serviceWorker' in navigator) {
       });
   });
 }
+
