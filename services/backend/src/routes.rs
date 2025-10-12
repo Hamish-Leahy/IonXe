@@ -35,6 +35,9 @@ pub fn build_router() -> Router {
         .route("/api/v1/controls/buttons", get(get_button_config).put(put_button_config))
         .route("/api/v1/controls/macros", get(get_macros).post(create_macro).put(update_macro).delete(delete_macro))
         .route("/api/v1/controls/execute", post(execute_macro))
+        // DMX Output endpoints
+        .route("/api/v1/dmx/status", get(get_dmx_status))
+        .route("/api/v1/dmx/test", post(test_dmx_output))
         .with_state(())
         .layer(cors)
         .layer(TraceLayer::new_for_http())
