@@ -34,6 +34,7 @@ class IonXeKeyboardShortcuts {
     this.addShortcut('ctrl+shift+d', 'Go to DMX Output', () => this.navigateToTab('dmx-output'));
     this.addShortcut('ctrl+shift+l', 'Go to Live Audio', () => this.navigateToTab('live-audio'));
     this.addShortcut('ctrl+shift+a', 'Go to AI Lighting', () => this.navigateToTab('ai-lighting'));
+    this.addShortcut('ctrl+shift+s', 'Go to Show Automation', () => this.navigateToTab('show-automation'));
     
     // Fader shortcuts
     this.addShortcut('space', 'Blackout', () => this.toggleBlackout());

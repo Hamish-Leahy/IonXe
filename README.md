@@ -7,6 +7,23 @@
 
 An open-source, from-scratch lighting control system inspired by the Eos IonXE console, designed for modern hardware with an easier learning curve and extensible architecture. Built with Rust, C, and modern web technologies.
 
+## 🆕 **Latest Features**
+
+### **🎭 Show Automation & Scheduling System**
+Complete professional show control with visual sequencer, time-based scheduling, external triggers (MIDI/OSC), and automated show execution.
+
+### **🤖 AI-Powered Lighting**
+Advanced AI scene generation using Mistral LLM, music analysis, 3D venue integration, and intelligent lighting recommendations.
+
+### **🎵 Live Audio Analysis & DJ Mode**
+Real-time audio capture, beat detection, spectral analysis, DJ performance interface, and music-reactive lighting effects.
+
+### **📱 Mobile Companion App (PWA)**
+Progressive Web App with touch-optimized controls, offline support, real-time sync, and mobile-specific features.
+
+### **🌐 Enhanced Network & Protocol Support**
+Comprehensive DMX output, Art-Net/sACN support, multi-universe control, and advanced networking capabilities.
+
 ## ✨ Features
 
 ### 🎛️ **Advanced Fader Control**
@@ -61,13 +78,53 @@ An open-source, from-scratch lighting control system inspired by the Eos IonXE c
 - **DMX Mapping** - Flexible channel mapping and control
 - **Fixture Integration** - Seamless integration with all control systems
 
-### 🎵 **Advanced Timing & Audio**
-- **BPM-Based Timing** - Musical timing with note presets
-- **Easing Functions** - Smooth transitions and curves
-- **Audio Integration** - Real-time audio analysis and reactive lighting
-- **Beat Detection** - Automatic BPM detection and synchronization
-- **Frequency Analysis** - Multi-band audio processing
-- **Audio Effects** - Sound-reactive lighting effects
+### 🎵 **Live Audio Analysis & Music Sync**
+- **Real-time Audio Capture** - Microphone and line input support
+- **Beat Detection** - Automatic BPM tracking and beat detection
+- **Spectral Analysis** - Frequency band analysis (bass, mid, treble)
+- **Energy Analysis** - Audio energy and intensity measurement
+- **Spectral Centroid** - Timbre analysis for musical characteristics
+- **DJ Mode** - Professional DJ interface with live performance controls
+- **Audio Visualization** - Multiple visualization modes (waveform, spectrum, circular)
+- **Sync Effects** - Beat sync, frequency sync, energy sync, and strobe sync
+- **Sync Point Management** - Manual sync points during live performance
+- **Audio Calibration** - Automatic sensitivity adjustment
+
+### 🎭 **Show Automation & Scheduling**
+- **Show Management** - Create, edit, and manage lighting shows
+- **Show Sequencer** - Visual timeline-based sequence editor
+- **Show Scheduler** - Time-based show scheduling and automation
+- **External Triggers** - MIDI, OSC, time, and manual trigger support
+- **Show Playback** - Play, pause, stop, and record shows
+- **Sequence Items** - Cues, delays, triggers, effects, and macros
+- **Show Monitoring** - Real-time show status and progress tracking
+- **Scheduled Shows** - Recurring and one-time show scheduling
+- **Trigger Configuration** - Configure external triggers for show control
+- **Show Library** - Save, load, and organize show collections
+
+### 🤖 **AI-Powered Lighting System**
+- **Mistral AI Integration** - Advanced AI scene generation using Mistral LLM
+- **Concept Processing** - Natural language lighting descriptions
+- **Music Analysis** - Multi-format audio analysis (WAV, MP3, MID, MIDI)
+- **3D Venue Integration** - Spatial lighting design with 3D venue models
+- **Smart Suggestions** - AI-powered lighting recommendations
+- **Contextual Generation** - Music and venue-aware scene creation
+- **Mood Analysis** - Spectral analysis for musical mood detection
+- **Harmonic Analysis** - Chord progression and key detection
+- **Rhythm Pattern Recognition** - Musical rhythm complexity analysis
+- **Spatial Effects** - 3D geometry-based lighting effects
+
+### 📱 **Mobile Companion App (PWA)**
+- **Progressive Web App** - Native app experience on mobile devices
+- **Touch-Optimized Controls** - Large, touch-friendly fader controls
+- **Real-time Sync** - Live synchronization with main console
+- **Offline Support** - Continue working without internet connection
+- **Scene Management** - Mobile scene save/recall functionality
+- **AI Integration** - Mobile access to AI lighting features
+- **System Monitoring** - Mobile system health and performance monitoring
+- **Push Notifications** - System alerts and status updates
+- **Background Sync** - Queue changes when offline, sync when connected
+- **Haptic Feedback** - Tactile response for better control
 
 ### 🌐 **Network & Protocol Support**
 - **Art-Net** - Industry-standard lighting protocol
@@ -76,6 +133,8 @@ An open-source, from-scratch lighting control system inspired by the Eos IonXE c
 - **Network Discovery** - Automatic device discovery
 - **RESTful API** - Complete HTTP API for integration
 - **WebSocket Support** - Real-time bidirectional communication
+- **DMX Output** - Real-time DMX packet generation and transmission
+- **Protocol Translation** - Seamless protocol conversion
 
 ### 📁 **Show Management**
 - **Show File System** - Complete show file management with templates
@@ -103,26 +162,40 @@ An open-source, from-scratch lighting control system inspired by the Eos IonXE c
 - **Alert System** - Real-time alerts with acknowledgment
 
 ### 🔧 **Developer Features**
-- **Modular Architecture** - Clean, maintainable codebase
-- **RESTful API** - Complete backend API for all features
-- **File Management** - Built-in file system operations
+- **Modular Architecture** - Clean, maintainable codebase with 20+ specialized modules
+- **RESTful API** - Complete backend API for all features across multiple services
+- **File Management** - Built-in file system operations with version control
 - **Command Center** - Shell access for advanced users
 - **Health Monitoring** - System status and diagnostics
+- **Service Architecture** - Microservices with Rust, C, and JavaScript
+- **Real-time Communication** - WebSocket and HTTP streaming support
+- **Error Handling** - Comprehensive error tracking and recovery
+- **Performance Monitoring** - Real-time metrics and optimization
+- **Docker Support** - Containerized deployment for all services
 
 
 ## 🏗️ **Architecture**
 
 ### **Backend Services**
-- **Rust Backend** - High-performance API server with state management
-- **C Backend** - Low-level hardware control and DMX processing
-- **Middleware** - Request routing, rate limiting, and protocol translation
+- **Rust Backend** - High-performance API server with state management (Port 8080)
+- **C Backend** - Low-level hardware control and DMX processing (Port 8081)
+- **Middleware** - Request routing, rate limiting, and protocol translation (Port 8082)
+- **AI Lighting Service** - Mistral AI integration and scene generation (Port 8084)
+- **Live Audio Service** - Real-time audio analysis and music sync (Port 8085)
+- **Show Automation Service** - Show scheduling and automation (Port 8086)
+- **Mobile App Service** - PWA backend and mobile API (Port 8087)
 
 ### **Frontend**
 - **Modular JavaScript** - Clean, maintainable frontend architecture with 20+ specialized modules
-- **Responsive Design** - Works on desktop and tablet devices
+- **Responsive Design** - Works on desktop, tablet, and mobile devices
 - **Real-time Updates** - Live synchronization across all controls
 - **Professional UI** - Industry-standard lighting console interface
 - **Keyboard Shortcuts** - Professional workflow shortcuts and hotkeys
+- **Progressive Web App** - Mobile companion app with offline support
+- **AI Integration** - Seamless AI-powered lighting features
+- **Live Audio Interface** - Real-time audio analysis and DJ mode
+- **Show Automation** - Visual show sequencer and scheduler
+- **Advanced Timing** - Professional timing controls and easing functions
 
 ### **Hardware Support**
 - **x86-64** - Primary target architecture
@@ -148,16 +221,20 @@ An open-source, from-scratch lighting control system inspired by the Eos IonXE c
 
 2. **Build the backend services**
    ```bash
-   # Build Rust backend
-   cargo build --release --manifest-path services/backend/Cargo.toml
+   # Build all Rust services
+   cargo build --release --workspace
    
    # Build C backend
    cd services/backend-c
    make
    cd ../..
    
-   # Build middleware
+   # Build individual services (optional)
+   cargo build --release --manifest-path services/backend/Cargo.toml
    cargo build --release --manifest-path services/middleware/Cargo.toml
+   cargo build --release --manifest-path services/ai-lighting/Cargo.toml
+   cargo build --release --manifest-path services/live-audio/Cargo.toml
+   cargo build --release --manifest-path services/show-automation/Cargo.toml
    ```
 
 3. **Start the services**
@@ -166,13 +243,18 @@ An open-source, from-scratch lighting control system inspired by the Eos IonXE c
    ./scripts/dev_start.sh
    
    # Or start individually
-   ./target/release/ionxe-backend &
-   ./services/backend-c/ionxe-backend-c &
-   ./target/release/ionxe-middleware &
+   ./target/release/ionxe-backend &           # Port 8080
+   ./services/backend-c/ionxe-backend-c &     # Port 8081
+   ./target/release/ionxe-middleware &        # Port 8082
+   ./target/release/ai-lighting &             # Port 8084
+   ./target/release/live-audio &              # Port 8085
+   ./target/release/show-automation &         # Port 8086
    ```
 
-4. **Access the web interface**
-   Open your browser to `http://localhost:8082`
+4. **Access the interfaces**
+   - **Main Console**: `http://localhost:8082`
+   - **Mobile App**: `http://localhost:8087`
+   - **API Health**: `http://localhost:8080/health`
 
 ## 📁 **Project Structure**
 
@@ -189,9 +271,13 @@ ionxe/
 │   ├── graphics/       # Graphics and display
 │   └── userland/       # User space applications
 ├── services/           # Backend services
-│   ├── backend/        # Rust API server
-│   ├── backend-c/      # C hardware control
-│   ├── middleware/     # Request routing and protocol translation
+│   ├── backend/        # Rust API server (Port 8080)
+│   ├── backend-c/      # C hardware control (Port 8081)
+│   ├── middleware/     # Request routing and protocol translation (Port 8082)
+│   ├── ai-lighting/    # AI scene generation service (Port 8084)
+│   ├── live-audio/     # Live audio analysis service (Port 8085)
+│   ├── show-automation/# Show automation service (Port 8086)
+│   ├── mobile-app/     # Mobile PWA service (Port 8087)
 │   └── frontend/       # Web interface
 ├── hardware/           # Hardware specifications and research
 ├── docs/               # Documentation and guides
@@ -209,6 +295,10 @@ ionxe/
 - Studio and broadcast lighting
 - Live event production
 - Corporate events and conferences
+- DJ and nightclub lighting
+- Automated show control
+- AI-powered lighting design
+- Mobile lighting control
 
 ### **Education & Training**
 - Lighting design education
@@ -223,6 +313,10 @@ ionxe/
 - API-driven lighting applications
 - Multi-user environments
 - Enterprise lighting management
+- Show automation and scheduling
+- Music-reactive lighting
+- AI-assisted lighting design
+- Mobile and remote control
 
 ## 🤝 **Contributing**
 
