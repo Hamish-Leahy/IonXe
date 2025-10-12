@@ -139,11 +139,99 @@
         <button id="qlist-prev">Prev</button>
         <button id="qlist-go">Go</button>
         <button id="qlist-next">Next</button>
+        <button id="qlist-pause">Pause</button>
+        <button id="qlist-stop">Stop</button>
         <span id="qlist-status" class="status"></span>
+      </div>
+      <div class="row">
+        <label>Auto-Follow: <input id="qlist-auto-follow" type="checkbox"/></label>
+        <label>Loop: <input id="qlist-loop" type="checkbox"/></label>
+        <label>Speed: <input id="qlist-speed" type="range" min="0.1" max="2.0" step="0.1" value="1.0"/></label>
+        <span id="qlist-speed-value" class="status">1.0x</span>
+      </div>
+      <div class="qlist-advanced-controls">
+        <div class="timing-controls">
+          <h4>Timing Controls</h4>
+          <div class="row">
+            <label>Curve: 
+              <select id="qlist-timing-curve">
+                <option value="instant">Instant</option>
+                <option value="quick-snap">Quick Snap</option>
+                <option value="smooth" selected>Smooth</option>
+                <option value="gentle">Gentle</option>
+                <option value="dramatic">Dramatic</option>
+                <option value="crossfade">Crossfade</option>
+                <option value="blackout">Blackout</option>
+                <option value="fade-up">Fade Up</option>
+                <option value="fade-down">Fade Down</option>
+              </select>
+            </label>
+            <button id="qlist-apply-curve">Apply to Selected</button>
+            <button id="qlist-apply-all">Apply to All</button>
+          </div>
+          <div class="row">
+            <label>Fade In Easing: 
+              <select id="qlist-fade-in-easing">
+                <option value="linear">Linear</option>
+                <option value="ease-in">Ease In</option>
+                <option value="ease-out" selected>Ease Out</option>
+                <option value="ease-in-out">Ease In-Out</option>
+                <option value="lighting-smooth">Lighting Smooth</option>
+                <option value="lighting-snap">Lighting Snap</option>
+                <option value="lighting-fade">Lighting Fade</option>
+                <option value="lighting-bounce">Lighting Bounce</option>
+              </select>
+            </label>
+            <label>Fade Out Easing: 
+              <select id="qlist-fade-out-easing">
+                <option value="linear">Linear</option>
+                <option value="ease-in" selected>Ease In</option>
+                <option value="ease-out">Ease Out</option>
+                <option value="ease-in-out">Ease In-Out</option>
+                <option value="lighting-smooth">Lighting Smooth</option>
+                <option value="lighting-snap">Lighting Snap</option>
+                <option value="lighting-fade">Lighting Fade</option>
+                <option value="lighting-bounce">Lighting Bounce</option>
+              </select>
+            </label>
+          </div>
+        </div>
+        <div class="cue-effects">
+          <h4>Cue Effects</h4>
+          <div class="row">
+            <button id="qlist-add-fade-effect">Add Fade Effect</button>
+            <button id="qlist-add-chase-effect">Add Chase Effect</button>
+            <button id="qlist-add-pulse-effect">Add Pulse Effect</button>
+            <button id="qlist-add-strobe-effect">Add Strobe Effect</button>
+            <button id="qlist-clear-effects">Clear Effects</button>
+          </div>
+        </div>
+        <div class="cue-linking">
+          <h4>Cue Linking</h4>
+          <div class="row">
+            <label>Link to Cue: <input id="qlist-link-cue" type="number" placeholder="Cue #"/></label>
+            <button id="qlist-create-link">Create Link</button>
+            <button id="qlist-break-link">Break Link</button>
+            <button id="qlist-show-links">Show Links</button>
+          </div>
+        </div>
       </div>
       <table id="qlist-table">
         <thead>
-          <tr><th>#</th><th>Label</th><th>Description</th><th>Fade In</th><th>Fade Out</th><th>Delay</th><th>Follow</th><th>Progress</th></tr>
+          <tr>
+            <th>#</th>
+            <th>Label</th>
+            <th>Description</th>
+            <th>Fade In</th>
+            <th>Fade Out</th>
+            <th>Delay</th>
+            <th>Follow</th>
+            <th>Hang</th>
+            <th>Curve</th>
+            <th>Effects</th>
+            <th>Link</th>
+            <th>Progress</th>
+          </tr>
         </thead>
         <tbody></tbody>
       </table>
@@ -269,6 +357,7 @@
     <script src="js/qlist-labels.js"></script>
     <script src="js/qlist-state.js"></script>
     <script src="js/qlist-timing.js"></script>
+    <script src="js/qlist-advanced-timing.js"></script>
     <script src="js/dmx-output.js"></script>
     <script src="js/qlist-ui.js"></script>
     <script src="js/qlist-integration.js"></script>
