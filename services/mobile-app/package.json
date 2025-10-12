@@ -1,0 +1,57 @@
+{
+  "name": "ionxe-mobile",
+  "version": "1.0.0",
+  "description": "Mobile companion app for IonXe lighting control system",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js",
+    "dev": "node server.js",
+    "build": "echo 'No build step required for PWA'",
+    "test": "echo 'No tests specified'",
+    "lint": "echo 'No linting configured'",
+    "serve": "python3 -m http.server 3001",
+    "serve-python2": "python -m SimpleHTTPServer 3001"
+  },
+  "keywords": [
+    "lighting",
+    "control",
+    "mobile",
+    "pwa",
+    "dmx",
+    "theatre",
+    "concert",
+    "stage"
+  ],
+  "author": "IonXe Team",
+  "license": "MIT",
+  "engines": {
+    "node": ">=14.0.0"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/your-org/ionxe.git",
+    "directory": "services/mobile-app"
+  },
+  "bugs": {
+    "url": "https://github.com/your-org/ionxe/issues"
+  },
+  "homepage": "https://github.com/your-org/ionxe#readme",
+  "devDependencies": {},
+  "dependencies": {},
+  "browserslist": [
+    "> 1%",
+    "last 2 versions",
+    "not dead",
+    "not ie 11"
+  ],
+  "pwa": {
+    "name": "IonXe Mobile",
+    "short_name": "IonXe",
+    "theme_color": "#007bff",
+    "background_color": "#1a1a1a",
+    "display": "standalone",
+    "orientation": "portrait",
+    "start_url": "/",
+    "scope": "/"
+  }
+}
