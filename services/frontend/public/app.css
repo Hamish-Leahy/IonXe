@@ -2780,6 +2780,314 @@ textarea:focus-visible {
   }
 }
 
+/* Advanced Q List Styles */
+.qlist-advanced-controls {
+  background: var(--panel);
+  border: 1px solid #1b2a3a;
+  border-radius: 8px;
+  padding: 16px;
+  margin: 16px 0;
+}
+
+.qlist-advanced-controls h4 {
+  color: var(--accent);
+  margin: 0 0 12px 0;
+  font-size: 14px;
+  font-weight: 600;
+}
+
+.timing-controls,
+.cue-effects,
+.cue-linking {
+  margin-bottom: 20px;
+  padding-bottom: 16px;
+  border-bottom: 1px solid #1b2a3a;
+}
+
+.timing-controls:last-child,
+.cue-effects:last-child,
+.cue-linking:last-child {
+  border-bottom: none;
+  margin-bottom: 0;
+  padding-bottom: 0;
+}
+
+/* Enhanced Q List Table */
+#qlist-table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-top: 16px;
+}
+
+#qlist-table th {
+  background: var(--bg2);
+  color: var(--text);
+  padding: 8px 12px;
+  text-align: left;
+  font-weight: 600;
+  font-size: 12px;
+  border-bottom: 2px solid #1b2a3a;
+}
+
+#qlist-table td {
+  padding: 8px 12px;
+  border-bottom: 1px solid #1b2a3a;
+  font-size: 12px;
+}
+
+#qlist-table tr:hover {
+  background: #1a2332;
+}
+
+#qlist-table tr.selected {
+  background: var(--accent);
+  color: white;
+}
+
+#qlist-table tr.current {
+  background: var(--accent2);
+  color: white;
+  font-weight: bold;
+}
+
+#qlist-table tr.active {
+  background: #2e7dd7;
+  color: white;
+}
+
+/* Cue Effects Column */
+.cue-effects-list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px;
+}
+
+.effect-tag {
+  background: #2e7dd7;
+  color: white;
+  padding: 2px 6px;
+  border-radius: 3px;
+  font-size: 10px;
+  font-weight: 500;
+}
+
+.effect-tag.fade { background: #22b07d; }
+.effect-tag.chase { background: #f39c12; }
+.effect-tag.pulse { background: #e74c3c; }
+.effect-tag.strobe { background: #9b59b6; }
+
+/* Cue Link Column */
+.cue-link {
+  color: var(--accent);
+  font-weight: bold;
+  text-decoration: none;
+}
+
+.cue-link:hover {
+  text-decoration: underline;
+}
+
+/* Context Menu */
+.context-menu {
+  background: var(--panel);
+  border: 1px solid #1b2a3a;
+  border-radius: 6px;
+  padding: 4px 0;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+  z-index: 1000;
+  min-width: 150px;
+}
+
+.context-item {
+  padding: 8px 16px;
+  color: var(--text);
+  cursor: pointer;
+  font-size: 12px;
+  transition: background-color 0.2s;
+}
+
+.context-item:hover {
+  background: var(--accent);
+  color: white;
+}
+
+/* Modal Enhancements */
+.modal .form-field {
+  margin-bottom: 16px;
+}
+
+.modal .form-field label {
+  display: block;
+  margin-bottom: 4px;
+  color: var(--text);
+  font-weight: 500;
+  font-size: 12px;
+}
+
+.modal .form-field input,
+.modal .form-field select {
+  width: 100%;
+  padding: 8px;
+  background: #0e151d;
+  border: 1px solid #1b2a3a;
+  border-radius: 4px;
+  color: var(--text);
+  font-size: 12px;
+}
+
+.modal .form-field input[type="range"] {
+  width: calc(100% - 40px);
+  margin-right: 8px;
+}
+
+.range-value {
+  color: var(--accent);
+  font-weight: bold;
+  font-size: 12px;
+}
+
+/* Playback Controls */
+#qlist-pause,
+#qlist-stop {
+  min-width: 80px;
+}
+
+#qlist-pause:disabled,
+#qlist-stop:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+/* Speed Control */
+#qlist-speed {
+  width: 120px;
+  margin: 0 8px;
+}
+
+#qlist-speed-value {
+  color: var(--accent);
+  font-weight: bold;
+  min-width: 40px;
+}
+
+/* Auto-Follow and Loop */
+#qlist-auto-follow,
+#qlist-loop {
+  margin-right: 8px;
+}
+
+/* Timing Curve Select */
+#qlist-timing-curve {
+  min-width: 150px;
+  margin-right: 8px;
+}
+
+/* Easing Selects */
+#qlist-fade-in-easing,
+#qlist-fade-out-easing {
+  min-width: 140px;
+  margin-right: 8px;
+}
+
+/* Effect Buttons */
+#qlist-add-fade-effect,
+#qlist-add-chase-effect,
+#qlist-add-pulse-effect,
+#qlist-add-strobe-effect {
+  margin-right: 8px;
+  margin-bottom: 4px;
+}
+
+#qlist-clear-effects {
+  background: #e74c3c;
+  border-color: #c0392b;
+}
+
+#qlist-clear-effects:hover {
+  background: #c0392b;
+  border-color: #a93226;
+}
+
+/* Link Controls */
+#qlist-link-cue {
+  width: 80px;
+  margin-right: 8px;
+}
+
+#qlist-create-link {
+  background: var(--accent2);
+  border-color: #1e8449;
+  margin-right: 8px;
+}
+
+#qlist-create-link:hover {
+  background: #1e8449;
+  border-color: #17a085;
+}
+
+#qlist-break-link {
+  background: #e74c3c;
+  border-color: #c0392b;
+  margin-right: 8px;
+}
+
+#qlist-break-link:hover {
+  background: #c0392b;
+  border-color: #a93226;
+}
+
+/* Progress Bar */
+#qlist-table progress {
+  width: 60px;
+  height: 8px;
+  border-radius: 4px;
+  background: #0e151d;
+  border: 1px solid #1b2a3a;
+}
+
+#qlist-table progress::-webkit-progress-bar {
+  background: #0e151d;
+  border-radius: 4px;
+}
+
+#qlist-table progress::-webkit-progress-value {
+  background: var(--accent);
+  border-radius: 4px;
+}
+
+#qlist-table progress::-moz-progress-bar {
+  background: var(--accent);
+  border-radius: 4px;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+  .qlist-advanced-controls {
+    padding: 12px;
+  }
+  
+  .timing-controls,
+  .cue-effects,
+  .cue-linking {
+    margin-bottom: 16px;
+    padding-bottom: 12px;
+  }
+  
+  #qlist-table {
+    font-size: 10px;
+  }
+  
+  #qlist-table th,
+  #qlist-table td {
+    padding: 6px 8px;
+  }
+  
+  .effect-tag {
+    font-size: 9px;
+    padding: 1px 4px;
+  }
+}
+
 /* Print styles */
 @media print {
   .topbar,
