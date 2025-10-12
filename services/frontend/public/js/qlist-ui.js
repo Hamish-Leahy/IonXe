@@ -339,9 +339,345 @@
   qListManager.onCueChanged = () => renderTable();
   qListManager.onCueListUpdated = () => renderTable();
 
+  // Enhanced UI functionality
+  function initializeEnhancedUI() {
+    // Control tabs functionality
+    const controlTabs = document.querySelectorAll('.control-tab');
+    const controlPanels = document.querySelectorAll('.control-panel');
+    
+    controlTabs.forEach(tab => {
+      tab.addEventListener('click', () => {
+        const targetTab = tab.dataset.tab;
+        
+        // Update tab states
+        controlTabs.forEach(t => t.classList.remove('active'));
+        controlPanels.forEach(p => p.classList.remove('active'));
+        
+        tab.classList.add('active');
+        document.getElementById(`${targetTab}-panel`).classList.add('active');
+      });
+    });
+
+    // Curve preview functionality
+    const curveSelect = document.getElementById('qlist-timing-curve');
+    const curvePreview = document.getElementById('curve-preview');
+    
+    if (curveSelect && curvePreview) {
+      curveSelect.addEventListener('change', updateCurvePreview);
+      updateCurvePreview();
+    }
+
+    // Easing preview functionality
+    const fadeInEasing = document.getElementById('qlist-fade-in-easing');
+    const fadeOutEasing = document.getElementById('qlist-fade-out-easing');
+    const fadeInPreview = document.getElementById('fade-in-preview');
+    const fadeOutPreview = document.getElementById('fade-out-preview');
+    
+    if (fadeInEasing && fadeInPreview) {
+      fadeInEasing.addEventListener('change', () => updateEasingPreview(fadeInPreview, fadeInEasing.value));
+      updateEasingPreview(fadeInPreview, fadeInEasing.value);
+    }
+    
+    if (fadeOutEasing && fadeOutPreview) {
+      fadeOutEasing.addEventListener('change', () => updateEasingPreview(fadeOutPreview, fadeOutEasing.value));
+      updateEasingPreview(fadeOutPreview, fadeOutEasing.value);
+    }
+
+    // Effect buttons functionality
+    const effectButtons = document.querySelectorAll('.effect-btn');
+    effectButtons.forEach(btn => {
+      btn.addEventListener('click', () => {
+        const effectType = btn.id.replace('qlist-add-', '').replace('-effect', '');
+        addEffectToSelectedCue(effectType);
+      });
+    });
+
+    // Search functionality
+    const searchInput = document.getElementById('qlist-search');
+    if (searchInput) {
+      searchInput.addEventListener('input', (e) => {
+        filterCues(e.target.value);
+      });
+    }
+
+    // Column sorting functionality
+    const sortButtons = document.querySelectorAll('.col-sort');
+    sortButtons.forEach(btn => {
+      btn.addEventListener('click', () => {
+        const sortField = btn.dataset.sort;
+        sortCues(sortField);
+      });
+    });
+
+    // Animation speed control
+    const animationSpeed = document.getElementById('qlist-animation-speed');
+    const animationSpeedValue = document.getElementById('animation-speed-value');
+    if (animationSpeed && animationSpeedValue) {
+      animationSpeed.addEventListener('input', (e) => {
+        animationSpeedValue.textContent = `${e.target.value}x`;
+        updateAnimationSpeed(parseFloat(e.target.value));
+      });
+    }
+  }
+
+  function updateCurvePreview() {
+    const curveSelect = document.getElementById('qlist-timing-curve');
+    const curvePreview = document.getElementById('curve-preview');
+    if (!curveSelect || !curvePreview) return;
+    
+    const curveType = curveSelect.value;
+    curvePreview.innerHTML = '';
+    
+    // Create SVG curve preview
+    const svg = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
+    svg.setAttribute('width', '100%');
+    svg.setAttribute('height', '100%');
+    svg.setAttribute('viewBox', '0 0 100 60');
+    
+    const path = document.createElementNS('http://www.w3.org/2000/svg', 'path');
+    path.setAttribute('fill', 'none');
+    path.setAttribute('stroke', '#007bff');
+    path.setAttribute('stroke-width', '2');
+    
+    let pathData = '';
+    switch (curveType) {
+      case 'instant':
+        pathData = 'M 0,30 L 100,30';
+        break;
+      case 'quick-snap':
+        pathData = 'M 0,30 Q 20,10 40,30 Q 60,50 80,30 L 100,30';
+        break;
+      case 'smooth':
+        pathData = 'M 0,30 Q 25,10 50,30 Q 75,50 100,30';
+        break;
+      case 'gentle':
+        pathData = 'M 0,30 Q 30,20 50,30 Q 70,40 100,30';
+        break;
+      case 'dramatic':
+        pathData = 'M 0,30 Q 20,5 40,30 Q 60,55 80,30 L 100,30';
+        break;
+      case 'crossfade':
+        pathData = 'M 0,30 Q 25,10 50,30 Q 75,50 100,30';
+        break;
+      case 'blackout':
+        pathData = 'M 0,30 L 50,30 L 50,10 L 100,10';
+        break;
+      case 'fade-up':
+        pathData = 'M 0,50 Q 25,40 50,30 Q 75,20 100,10';
+        break;
+      case 'fade-down':
+        pathData = 'M 0,10 Q 25,20 50,30 Q 75,40 100,50';
+        break;
+    }
+    
+    path.setAttribute('d', pathData);
+    svg.appendChild(path);
+    curvePreview.appendChild(svg);
+  }
+
+  function updateEasingPreview(previewEl, easingType) {
+    if (!previewEl) return;
+    
+    previewEl.innerHTML = '';
+    
+    const svg = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
+    svg.setAttribute('width', '100%');
+    svg.setAttribute('height', '100%');
+    svg.setAttribute('viewBox', '0 0 100 40');
+    
+    const path = document.createElementNS('http://www.w3.org/2000/svg', 'path');
+    path.setAttribute('fill', 'none');
+    path.setAttribute('stroke', '#28a745');
+    path.setAttribute('stroke-width', '2');
+    
+    let pathData = '';
+    switch (easingType) {
+      case 'linear':
+        pathData = 'M 0,30 L 100,10';
+        break;
+      case 'ease-in':
+        pathData = 'M 0,30 Q 25,30 50,20 Q 75,15 100,10';
+        break;
+      case 'ease-out':
+        pathData = 'M 0,30 Q 25,25 50,20 Q 75,10 100,10';
+        break;
+      case 'ease-in-out':
+        pathData = 'M 0,30 Q 25,30 50,20 Q 75,10 100,10';
+        break;
+      case 'lighting-smooth':
+        pathData = 'M 0,30 C 20,30 30,20 50,20 C 70,20 80,10 100,10';
+        break;
+      case 'lighting-snap':
+        pathData = 'M 0,30 L 20,30 L 20,10 L 100,10';
+        break;
+      case 'lighting-fade':
+        pathData = 'M 0,30 Q 30,25 50,20 Q 70,15 100,10';
+        break;
+      case 'lighting-bounce':
+        pathData = 'M 0,30 Q 20,20 40,25 Q 60,15 80,20 Q 90,10 100,10';
+        break;
+    }
+    
+    path.setAttribute('d', pathData);
+    svg.appendChild(path);
+    previewEl.appendChild(svg);
+  }
+
+  function addEffectToSelectedCue(effectType) {
+    const selectedCue = getSelectedCue();
+    if (!selectedCue) {
+      setStatus('No cue selected');
+      return;
+    }
+    
+    if (!selectedCue.effects) selectedCue.effects = [];
+    
+    const effect = {
+      id: Date.now().toString(),
+      type: effectType,
+      name: effectType.charAt(0).toUpperCase() + effectType.slice(1),
+      parameters: {}
+    };
+    
+    selectedCue.effects.push(effect);
+    renderTable();
+    qListStateManager.saveStateToServer();
+    setStatus(`Added ${effect.name} effect to cue ${selectedCue.number}`);
+  }
+
+  function filterCues(searchTerm) {
+    const rows = document.querySelectorAll('.qlist-cue-row');
+    rows.forEach(row => {
+      const label = row.querySelector('.qlist-cue-label').textContent.toLowerCase();
+      const description = row.querySelector('.qlist-cue-description').textContent.toLowerCase();
+      const search = searchTerm.toLowerCase();
+      
+      if (label.includes(search) || description.includes(search)) {
+        row.style.display = '';
+      } else {
+        row.style.display = 'none';
+      }
+    });
+  }
+
+  function sortCues(field) {
+    qListManager.cues.sort((a, b) => {
+      let aVal, bVal;
+      
+      switch (field) {
+        case 'number':
+          aVal = a.number;
+          bVal = b.number;
+          break;
+        case 'label':
+          aVal = a.label.toLowerCase();
+          bVal = b.label.toLowerCase();
+          break;
+        case 'description':
+          aVal = (a.description || '').toLowerCase();
+          bVal = (b.description || '').toLowerCase();
+          break;
+        case 'fadeIn':
+          aVal = a.timing.fadeIn || 0;
+          bVal = b.timing.fadeIn || 0;
+          break;
+        case 'fadeOut':
+          aVal = a.timing.fadeOut || 0;
+          bVal = b.timing.fadeOut || 0;
+          break;
+        case 'follow':
+          aVal = a.timing.follow || 0;
+          bVal = b.timing.follow || 0;
+          break;
+        default:
+          return 0;
+      }
+      
+      if (aVal < bVal) return -1;
+      if (aVal > bVal) return 1;
+      return 0;
+    });
+    
+    renderTable();
+    qListStateManager.saveStateToServer();
+    setStatus(`Sorted by ${field}`);
+  }
+
+  function updateAnimationSpeed(speed) {
+    // Update CSS custom property for animation speed
+    document.documentElement.style.setProperty('--animation-speed', speed);
+  }
+
+  function getSelectedCue() {
+    const selectedRow = document.querySelector('.qlist-cue-row.selected');
+    if (!selectedRow) return null;
+    
+    const cueId = selectedRow.dataset.id;
+    return qListManager.cues.find(c => c.id === cueId);
+  }
+
+  // Global functions for button onclick handlers
+  window.editCue = function(cueId) {
+    const cue = qListManager.cues.find(c => c.id === cueId);
+    if (cue) {
+      // Focus on the label field for editing
+      const row = document.querySelector(`[data-id="${cueId}"]`);
+      const labelField = row.querySelector('.qlist-cue-label');
+      labelField.focus();
+      labelField.select();
+    }
+  };
+
+  window.duplicateCue = function(cueId) {
+    const cue = qListManager.duplicateCue(cueId);
+    if (cue) {
+      renderTable();
+      qListStateManager.saveStateToServer();
+      setStatus(`Duplicated cue ${cue.number}`);
+    }
+  };
+
+  window.moveCueUp = function(cueId) {
+    const index = qListManager.cues.findIndex(c => c.id === cueId);
+    if (index > 0) {
+      const cue = qListManager.cues.splice(index, 1)[0];
+      qListManager.cues.splice(index - 1, 0, cue);
+      
+      // Update cue numbers
+      qListManager.cues.forEach((c, i) => c.number = i + 1);
+      
+      renderTable();
+      qListStateManager.saveStateToServer();
+      setStatus(`Moved cue ${cue.number} up`);
+    }
+  };
+
+  window.moveCueDown = function(cueId) {
+    const index = qListManager.cues.findIndex(c => c.id === cueId);
+    if (index < qListManager.cues.length - 1) {
+      const cue = qListManager.cues.splice(index, 1)[0];
+      qListManager.cues.splice(index + 1, 0, cue);
+      
+      // Update cue numbers
+      qListManager.cues.forEach((c, i) => c.number = i + 1);
+      
+      renderTable();
+      qListStateManager.saveStateToServer();
+      setStatus(`Moved cue ${cue.number} down`);
+    }
+  };
+
+  window.deleteCue = function(cueId) {
+    qListManager.deleteCue(cueId);
+    renderTable();
+    qListStateManager.saveStateToServer();
+    setStatus('Deleted cue');
+  };
+
   // Initialize
   nameInput.value = qListManager.cueListName;
   renderTable();
+  initializeEnhancedUI();
 })();
 
 
